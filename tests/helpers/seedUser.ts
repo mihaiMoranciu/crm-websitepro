@@ -4,6 +4,8 @@ import config from '../../src/payload.config.js'
 export const testUser = {
   email: 'dev@payloadcms.com',
   password: 'test',
+  // E2E tests drive the admin panel, so the seeded account needs full rights.
+  roles: ['admin' as const],
 }
 
 /**

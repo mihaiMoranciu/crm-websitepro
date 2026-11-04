@@ -1,4 +1,12 @@
+/*
+ * Radix Themes goes into its own layer, between Tailwind's base and its
+ * utilities. Unlayered, Radix would outrank every utility, and a class such
+ * as `md:flex` on a Radix component would silently do nothing.
+ */
+@layer theme, base, radix, components, utilities;
+
 @import 'tailwindcss';
+@import '@radix-ui/themes/styles.css' layer(radix);
 @import 'tw-animate-css';
 
 @config '../../../tailwind.config.mjs';
@@ -43,8 +51,8 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
-  --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-sans: var(--font-plex-sans);
 }
 
 @layer utilities {
@@ -86,81 +94,50 @@
   }
 }
 
-:root {
-  --background: oklch(100% 0 0deg);
-  --foreground: oklch(14.5% 0 0deg);
-  --card: oklch(96.5% 0.005 265deg);
-  --card-foreground: oklch(14.5% 0 0deg);
-  --popover: oklch(100% 0 0deg);
-  --popover-foreground: oklch(14.5% 0 0deg);
-  --primary: oklch(20.5% 0 0deg);
-  --primary-foreground: oklch(98.5% 0 0deg);
-  --secondary: oklch(97% 0 0deg);
-  --secondary-foreground: oklch(20.5% 0 0deg);
-  --muted: oklch(97% 0 0deg);
-  --muted-foreground: oklch(55.6% 0 0deg);
-  --accent: oklch(97% 0 0deg);
-  --accent-foreground: oklch(20.5% 0 0deg);
-  --destructive: oklch(57.7% 0.245 27.325deg);
-  --destructive-foreground: oklch(57.7% 0.245 27.325deg);
-  --border: oklch(92.2% 0 0deg);
-  --input: oklch(92.2% 0 0deg);
-  --ring: oklch(70.8% 0 0deg);
-  --chart-1: oklch(64.6% 0.222 41.116deg);
-  --chart-2: oklch(60% 0.118 184.704deg);
-  --chart-3: oklch(39.8% 0.07 227.392deg);
-  --chart-4: oklch(82.8% 0.189 84.429deg);
-  --chart-5: oklch(76.9% 0.188 70.08deg);
-  --radius: 0.625rem;
-  --sidebar: oklch(98.5% 0 0deg);
-  --sidebar-foreground: oklch(14.5% 0 0deg);
-  --sidebar-primary: oklch(20.5% 0 0deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(97% 0 0deg);
-  --sidebar-accent-foreground: oklch(20.5% 0 0deg);
-  --sidebar-border: oklch(92.2% 0 0deg);
-  --sidebar-ring: oklch(70.8% 0 0deg);
-  --success: oklch(78% 0.08 200deg);
-  --warning: oklch(89% 0.1 75deg);
-  --error: oklch(75% 0.15 25deg);
-}
-
-[data-theme='dark'] {
-  --background: oklch(14.5% 0 0deg);
-  --foreground: oklch(98.5% 0 0deg);
-  --card: oklch(17% 0 0deg);
-  --card-foreground: oklch(98.5% 0 0deg);
-  --popover: oklch(14.5% 0 0deg);
-  --popover-foreground: oklch(98.5% 0 0deg);
-  --primary: oklch(98.5% 0 0deg);
-  --primary-foreground: oklch(20.5% 0 0deg);
-  --secondary: oklch(26.9% 0 0deg);
-  --secondary-foreground: oklch(98.5% 0 0deg);
-  --muted: oklch(26.9% 0 0deg);
-  --muted-foreground: oklch(70.8% 0 0deg);
-  --accent: oklch(26.9% 0 0deg);
-  --accent-foreground: oklch(98.5% 0 0deg);
-  --destructive: oklch(39.6% 0.141 25.723deg);
-  --destructive-foreground: oklch(63.7% 0.237 25.331deg);
-  --border: oklch(26.9% 0 0deg);
-  --input: oklch(26.9% 0 0deg);
-  --ring: oklch(43.9% 0 0deg);
-  --chart-1: oklch(48.8% 0.243 264.376deg);
-  --chart-2: oklch(69.6% 0.17 162.48deg);
-  --chart-3: oklch(76.9% 0.188 70.08deg);
-  --chart-4: oklch(62.7% 0.265 303.9deg);
-  --chart-5: oklch(64.5% 0.246 16.439deg);
-  --sidebar: oklch(20.5% 0 0deg);
-  --sidebar-foreground: oklch(98.5% 0 0deg);
-  --sidebar-primary: oklch(48.8% 0.243 264.376deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(26.9% 0 0deg);
-  --sidebar-accent-foreground: oklch(98.5% 0 0deg);
-  --sidebar-border: oklch(26.9% 0 0deg);
-  --sidebar-ring: oklch(43.9% 0 0deg);
-  --success: oklch(28% 0.1 200deg);
-  --warning: oklch(35% 0.08 70deg);
-  --error: oklch(45% 0.1 25deg);
+/*
+ * The template's components (Header, Footer, blocks) are written against
+ * shadcn's variable names. Pointing those names at the design tokens keeps
+ * them on the same palette as everything built with Radix, until they are
+ * rebuilt. Dark mode needs no second block: the tokens already switch.
+ */
+.radix-themes {
+  --background: var(--surface-page);
+  --foreground: var(--text-strong);
+  --text: var(--text-strong);
+  --card: var(--surface-sunken);
+  --card-foreground: var(--text-strong);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--text-strong);
+  --primary: var(--brand-solid);
+  --primary-foreground: var(--brand-on-solid);
+  --secondary: var(--surface-hover);
+  --secondary-foreground: var(--text-strong);
+  --muted: var(--surface-hover);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--brand-soft);
+  --accent-foreground: var(--brand-text);
+  --destructive: var(--red-9);
+  --destructive-foreground: var(--red-11);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--focus-ring);
+  --chart-1: var(--accent-9);
+  --chart-2: var(--highlight-9);
+  --chart-3: var(--gray-9);
+  --chart-4: var(--accent-7);
+  --chart-5: var(--highlight-7);
+  --radius: var(--radius-4);
+  --sidebar: var(--surface-sunken);
+  --sidebar-foreground: var(--text-strong);
+  --sidebar-primary: var(--brand-solid);
+  --sidebar-primary-foreground: var(--brand-on-solid);
+  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent-foreground: var(--brand-text);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--focus-ring);
+  --success: var(--grass-a3);
+  --warning: var(--amber-a3);
+  --error: var(--red-a3);
 }
 
 @theme inline {
@@ -203,6 +180,20 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
+
+  /* Design tokens as utilities: bg-brand, text-brand-text, border-frame... */
+  --color-frame: var(--frame-line);
+  --color-page: var(--surface-page);
+  --color-sunken: var(--surface-sunken);
+  --color-strong: var(--text-strong);
+  --color-subtle: var(--text-muted);
+  --color-brand: var(--brand-solid);
+  --color-brand-hover: var(--brand-solid-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-text: var(--brand-text);
+  --color-highlight: var(--highlight-solid);
+  --color-highlight-soft: var(--highlight-soft);
+  --color-highlight-text: var(--highlight-text);
 }
 
 @layer base {
@@ -221,4 +212,287 @@ html {
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+/*
+ * The line chart in the hero mockups. The line draws itself once when the
+ * page loads (its length is normalised to 1 with pathLength, so the dash
+ * trick needs no measuring), then the area beneath fades in and the last
+ * point appears. Under reduced motion all three are simply there.
+ */
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chart-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chart-line {
+    stroke-dasharray: 1;
+    animation: chart-draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) 300ms both;
+  }
+
+  .chart-area {
+    animation: chart-appear 700ms ease-out 1.2s both;
+  }
+
+  .chart-dot {
+    animation: chart-appear 300ms ease-out 1.8s both;
+  }
+}
+
+/*
+ * The dashed arrows linking the hero mockups. The dashes creep forward along
+ * the line, slowly, to show which way the work flows; still under reduced
+ * motion. The stroke does not scale with the drawing, so it stays a hairline
+ * however wide the area is.
+ */
+.flow-line {
+  stroke: var(--gray-9);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 6;
+  vector-effect: non-scaling-stroke;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .flow-line {
+    animation: flow-dash 1.6s linear infinite;
+  }
+}
+
+/* The header's large menu: the panel eases to each menu's height, its
+   content fades in, and the whole panel fades out on close. */
+.nav-viewport {
+  height: var(--radix-navigation-menu-viewport-height);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nav-viewport {
+    transition: height 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-viewport[data-state='open'] {
+    animation: nav-fade-in 200ms ease-out;
+  }
+  .nav-viewport[data-state='closed'] {
+    animation: nav-fade-out 150ms ease-in forwards;
+  }
+  .nav-content[data-state='open'] {
+    animation: nav-fade-in 250ms ease-out;
+  }
+}
+@keyframes nav-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nav-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/*
+ * Blog articles: the rich text from the admin, set for reading. Plain
+ * elements styled here so whatever the editor produces looks like the site.
+ */
+.article {
+  color: var(--gray-12);
+  font-size: var(--font-size-4);
+  line-height: 1.75;
+}
+.article > * {
+  margin: 0;
+}
+.article > * + * {
+  margin-top: 1.25em;
+}
+.article h2 {
+  margin-top: 2.2em;
+  font-size: var(--font-size-6);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.article h3 {
+  margin-top: 1.8em;
+  font-size: var(--font-size-5);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.article h2 + *,
+.article h3 + * {
+  margin-top: 0.6em;
+}
+.article strong {
+  font-weight: 600;
+}
+.article a {
+  color: var(--accent-11);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.article ul,
+.article ol {
+  padding-left: 1.25em;
+}
+.article ul {
+  list-style: disc;
+}
+.article ol {
+  list-style: decimal;
+}
+.article li + li {
+  margin-top: 0.4em;
+}
+.article li::marker {
+  color: var(--gray-9);
+}
+.article blockquote {
+  border-left: 2px solid var(--accent-9);
+  padding-left: 1em;
+  color: var(--gray-11);
+}
+.article hr {
+  border: 0;
+  border-top: 1px solid var(--frame-line);
+}
+.article .table-wrap {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  overflow-x: auto;
+  border: 1px solid var(--frame-line);
+  border-radius: var(--radius-4);
+}
+.article table {
+  width: 100%;
+  /* On a phone the table scrolls sideways instead of squeezing every column. */
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: var(--font-size-3);
+  line-height: 1.55;
+}
+.article th,
+.article td {
+  padding: 0.8em 1em;
+  border-bottom: 1px solid var(--frame-line);
+  text-align: left;
+  vertical-align: top;
+}
+.article th {
+  background: var(--gray-2);
+  font-weight: 600;
+}
+.article tr:last-child > * {
+  border-bottom: 0;
+}
+.article td p,
+.article th p {
+  margin: 0;
+}
+
+/*
+ * "Cere o ofertă" (QuoteButton). A shadow tinted with the brand green; on
+ * hover the button lifts, a band of light crosses it and the paper plane
+ * flies off to the top right and back in from the bottom left. With
+ * data-attention the light also crosses it on its own every few seconds.
+ */
+.quote-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow: 0 10px 28px -12px var(--accent-a10);
+}
+.quote-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.32) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+}
+.quote-btn-icon {
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .quote-btn {
+    transition:
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 200ms ease;
+  }
+  .quote-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px -12px var(--accent-a11);
+  }
+  .quote-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .quote-btn:hover::after {
+    animation: quote-shine 750ms ease-out;
+  }
+  .quote-btn[data-attention]:not(:hover)::after {
+    animation: quote-shine-idle 6s ease-in-out 1.5s infinite;
+  }
+  .quote-btn:hover .quote-btn-icon > svg {
+    animation: quote-fly 600ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+}
+@keyframes quote-shine {
+  to {
+    transform: translateX(120%);
+  }
+}
+@keyframes quote-shine-idle {
+  0% {
+    transform: translateX(-120%);
+  }
+  18%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+@keyframes quote-fly {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(140%, -140%);
+    opacity: 0;
+  }
+  46% {
+    transform: translate(-140%, 140%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
 }

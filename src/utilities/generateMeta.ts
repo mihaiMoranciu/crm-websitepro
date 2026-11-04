@@ -4,11 +4,12 @@ import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
+import { siteConfig } from './siteConfig'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
 
-  let url = serverUrl + '/website-template-OG.webp'
+  let url = serverUrl + siteConfig.ogImage
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
@@ -27,13 +28,13 @@ export const generateMeta = async (args: {
   const ogImage = getImageURL(doc?.meta?.image)
 
   const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | Payload Website Template'
-    : 'Payload Website Template'
+    ? `${doc.meta.title} | ${siteConfig.name}`
+    : `${siteConfig.defaultTitle} | ${siteConfig.name}`
 
   return {
-    description: doc?.meta?.description,
+    description: doc?.meta?.description || siteConfig.description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
+      description: doc?.meta?.description || siteConfig.socialDescription,
       images: ogImage
         ? [
             {

@@ -1,4 +1,4 @@
-import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import type { CollectionSlug, Payload, PayloadRequest, File } from 'payload'
 
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
@@ -19,8 +19,6 @@ const collections: CollectionSlug[] = [
   'form-submissions',
   'search',
 ]
-
-const globals: GlobalSlug[] = ['header', 'footer']
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
 
@@ -44,17 +42,16 @@ export const seed = async ({
   payload.logger.info(`— Clearing collections and globals...`)
 
   // clear the database
+  // Listed one by one rather than mapped over every global: only these two
+  // carry navItems, and a shared loop would have to satisfy the data shape of
+  // every global in the config.
   await Promise.all(
-    globals.map((global) =>
+    (['header', 'footer'] as const).map((slug) =>
       payload.updateGlobal({
-        slug: global,
-        data: {
-          navItems: [],
-        },
+        slug,
+        data: { navItems: [] },
         depth: 0,
-        context: {
-          disableRevalidate: true,
-        },
+        context: { disableRevalidate: true },
       }),
     ),
   )
@@ -105,6 +102,7 @@ export const seed = async ({
         name: 'Demo Author',
         email: 'demo-author@example.com',
         password: 'password',
+        roles: ['admin'],
       },
     }),
     payload.create({

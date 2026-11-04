@@ -1,0 +1,90 @@
+.invoice-totals {
+  margin-top: calc(var(--base) * 0.4);
+  padding: calc(var(--base) * 0.7);
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-50);
+
+  &--empty {
+    color: var(--theme-elevation-500);
+  }
+
+  &__lines {
+    list-style: none;
+    margin: 0 0 calc(var(--base) * 0.5);
+    padding: 0;
+  }
+
+  &__line {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--base) * 0.6);
+    padding: calc(var(--base) * 0.22) 0;
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+
+  &__desc {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__calcul,
+  &__amount {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__calcul {
+    color: var(--theme-elevation-500);
+  }
+
+  &__amount {
+    min-width: calc(var(--base) * 5);
+    text-align: right;
+  }
+
+  &__summary {
+    margin: 0;
+
+    > div {
+      display: flex;
+      justify-content: flex-end;
+      gap: calc(var(--base) * 0.8);
+      padding: calc(var(--base) * 0.15) 0;
+    }
+
+    dt {
+      color: var(--theme-elevation-500);
+    }
+
+    dd {
+      margin: 0;
+      min-width: calc(var(--base) * 5);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &__total {
+    margin-top: calc(var(--base) * 0.25);
+    padding-top: calc(var(--base) * 0.35) !important;
+    border-top: 1px solid var(--theme-border-color);
+    font-weight: 600;
+
+    dt {
+      color: var(--theme-elevation-1000) !important;
+    }
+
+    dd {
+      color: var(--brand);
+    }
+  }
+}
+
+.invoice-totals__payment {
+  margin-top: calc(var(--base) * 0.4);
+  padding-top: calc(var(--base) * 0.4);
+  border-top: 1px dashed var(--theme-border-color);
+}

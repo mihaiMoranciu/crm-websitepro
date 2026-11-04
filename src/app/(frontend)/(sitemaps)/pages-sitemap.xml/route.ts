@@ -3,6 +3,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 
+import { STATIC_ROUTES } from '@/utilities/staticRoutes'
+
 const getPagesSitemap = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -31,16 +33,12 @@ const getPagesSitemap = unstable_cache(
 
     const dateFallback = new Date().toISOString()
 
-    const defaultSitemap = [
-      {
-        loc: `${SITE_URL}/search`,
-        lastmod: dateFallback,
-      },
-      {
-        loc: `${SITE_URL}/posts`,
-        lastmod: dateFallback,
-      },
-    ]
+    // Pages written in code, the blog included. Search results are left out on
+    // purpose: they are thin, duplicate content to a search engine.
+    const defaultSitemap = STATIC_ROUTES.map((path) => ({
+      loc: `${SITE_URL}${path === '/' ? '/' : path}`,
+      lastmod: dateFallback,
+    }))
 
     const sitemap = results.docs
       ? results.docs
@@ -53,7 +51,9 @@ const getPagesSitemap = unstable_cache(
           })
       : []
 
-    return [...defaultSitemap, ...sitemap]
+    // A CMS page may share a URL with a page written in code; list each URL once.
+    const seen = new Set<string>()
+    return [...defaultSitemap, ...sitemap].filter(({ loc }) => !seen.has(loc) && seen.add(loc))
   },
   ['pages-sitemap'],
   {

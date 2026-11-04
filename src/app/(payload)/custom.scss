@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/**
+ * Payload admin theme.
+ *
+ * Payload wraps all of its own styles in `@layer payload-default`. Unlayered
+ * rules beat layered ones regardless of specificity, so everything below wins
+ * without a single `!important`.
+ *
+ * The panel derives almost all of its colour from one neutral ramp:
+ *   light -> --theme-elevation-N maps to --color-base-N
+ *   dark  -> the mapping inverts (elevation-0 becomes base-900)
+ * Redefining the ramp therefore restyles both themes at once.
+ */
+
+:root {
+  /* ------------------------------------------------------------------ *
+   * Neutral ramp
+   *
+   * Payload ships a pure greyscale (255,255,255 -> 0,0,0). Perfectly
+   * desaturated neutrals are what make an interface read as "system default".
+   * This ramp carries a slight warm cast instead, which reads as chosen.
+   * Neither end is pure black or pure white, so nothing clips.
+   * ------------------------------------------------------------------ */
+  --color-base-0: #fefdfc;
+  --color-base-50: #f8f7f5;
+  --color-base-100: #f0eeec;
+  --color-base-150: #e6e3e0;
+  --color-base-200: #dbd7d3;
+  --color-base-250: #cfcac5;
+  --color-base-300: #c1bcb6;
+  --color-base-350: #b2aca6;
+  --color-base-400: #a29c95;
+  --color-base-450: #938c85;
+  --color-base-500: #837d76;
+  --color-base-550: #746e67;
+  --color-base-600: #665f59;
+  --color-base-650: #58524c;
+  --color-base-700: #4a4540;
+  --color-base-750: #3d3833;
+  --color-base-800: #302c28;
+  --color-base-850: #25211e;
+  --color-base-900: #1b1815;
+  --color-base-950: #100e0c;
+  --color-base-1000: #060504;
+
+  /* Brand accent. Forest green ties the panel to the public site.
+     White on this green measures 5.3:1, comfortably past WCAG AA. */
+  --brand: #1f7a4d;
+  --brand-hover: #19643f;
+  --brand-contrast: #ffffff;
+
+  /* ------------------------------------------------------------------ *
+   * Typography
+   *
+   * The default stack resolves to Segoe UI on Windows, which is precisely
+   * why the panel looks like a system utility. Inter is drawn for dense UI;
+   * JetBrains Mono keeps figures aligned in tables.
+   * ------------------------------------------------------------------ */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Defaults are 3 / 4 / 8px. Near-square corners are the other half of the
+     "system utility" feel. */
+  --style-radius-s: 6px;
+  --style-radius-m: 8px;
+  --style-radius-l: 14px;
+}
+
+/* Primary actions carry the brand instead of a flat dark grey. The Button
+   component exposes these four custom properties, so no structural override
+   is needed. */
+.btn--style-primary {
+  --bg-color: var(--brand);
+  --color: var(--brand-contrast);
+  --hover-bg: var(--brand-hover);
+  --hover-color: var(--brand-contrast);
+}
+
+/* A single, obvious focus ring everywhere, in the brand colour. */
+*:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--style-radius-s);
+}
+
+/* Figures line up column-wise: amounts, fiscal codes, hours. */
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ *
+ * Nav icons
+ *
+ * Payload has no per-collection icon option, so each link is matched by
+ * its href and given a masked SVG. Masking (rather than background-image)
+ * makes the glyph inherit the link colour, so it follows theme and hover
+ * without a second set of assets.
+ * ------------------------------------------------------------------ */
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+
+  &::before {
+    content: '';
+    width: 1.05em;
+    height: 1.05em;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--nav-icon) center / contain no-repeat;
+    mask: var(--nav-icon) center / contain no-repeat;
+    opacity: 0.75;
+  }
+
+  /* No icon mapped: keep the row aligned with the others. */
+  &:not([href*='/collections/'])::before {
+    display: none;
+  }
+}
+
+.nav__link[href$='/collections/clienti'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/proiecte'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/taskuri'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/pontaj'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/facturi'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z'/%3E%3Cpath d='M8 7h8M8 11h8M8 15h5'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/incasari'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='14' x='2' y='5' rx='2'/%3E%3Cline x1='2' x2='22' y1='10' y2='10'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/pages'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v5h6'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/posts'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2'/%3E%3Cpath d='M18 14h-8M18 18h-8M18 6h-8v4h8V6Z'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/media'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/categories'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2H2v10l9.29 9.29a1 1 0 0 0 1.41 0l8.59-8.59a1 1 0 0 0 0-1.41L12 2Z'/%3E%3Cpath d='M7 7h.01'/%3E%3C/svg%3E");
+}
+
+.nav__link[href$='/collections/users'] {
+  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
+}

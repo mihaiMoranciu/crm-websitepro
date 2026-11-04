@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import {
   BlocksFeature,
+  EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
@@ -93,11 +94,26 @@ export const Posts: CollectionConfig<'posts'> = {
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
+                    EXPERIMENTAL_TableFeature(),
                   ]
                 },
               }),
               label: false,
               required: true,
+            },
+            {
+              name: 'faq',
+              type: 'array',
+              label: 'Întrebări frecvente',
+              labels: { singular: 'Întrebare', plural: 'Întrebări' },
+              admin: {
+                description:
+                  'Apar la finalul articolului și pot apărea direct în rezultatele Google. Câteva întrebări reale, cu răspunsuri scurte.',
+              },
+              fields: [
+                { name: 'question', type: 'text', label: 'Întrebare', required: true },
+                { name: 'answer', type: 'textarea', label: 'Răspuns', required: true },
+              ],
             },
           ],
           label: 'Content',

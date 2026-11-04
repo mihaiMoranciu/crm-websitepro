@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "dither-background": {
+      "source": "mengto/skills",
+      "sourceType": "github",
+      "skillPath": "agent-skills/web-design/dither-background/SKILL.md",
+      "computedHash": "8621c3b3fdb2fd9494bfb8daa7a04a94c55b74530cf14f594ce17f2c8d03cdfe"
+    }
+  }
+}

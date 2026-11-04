@@ -67,6 +67,13 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    clienti: Clienti;
+    proiecte: Proiecte;
+    taskuri: Taskuri;
+    pontaj: Pontaj;
+    facturi: Facturi;
+    abonamente: Abonamente;
+    incasari: Incasari;
     pages: Page;
     posts: Post;
     media: Media;
@@ -84,11 +91,30 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {
+    clienti: {
+      proiecte: 'proiecte';
+    };
+    proiecte: {
+      taskuri: 'taskuri';
+    };
+    taskuri: {
+      pontaj: 'pontaj';
+    };
+    abonamente: {
+      facturi: 'facturi';
+    };
     'payload-folders': {
       documentsAndFolders: 'payload-folders' | 'media';
     };
   };
   collectionsSelect: {
+    clienti: ClientiSelect<false> | ClientiSelect<true>;
+    proiecte: ProiecteSelect<false> | ProiecteSelect<true>;
+    taskuri: TaskuriSelect<false> | TaskuriSelect<true>;
+    pontaj: PontajSelect<false> | PontajSelect<true>;
+    facturi: FacturiSelect<false> | FacturiSelect<true>;
+    abonamente: AbonamenteSelect<false> | AbonamenteSelect<true>;
+    incasari: IncasariSelect<false> | IncasariSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -106,16 +132,20 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {
+    'setari-firma': SetariFirma;
     header: Header;
     footer: Footer;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
+    'setari-firma': SetariFirmaSelect<false> | SetariFirmaSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -124,6 +154,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      emiteAbonamente: TaskEmiteAbonamente;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -152,11 +183,418 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Firme și persoane fizice cu care lucrăm.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clienti".
+ */
+export interface Clienti {
+  id: number;
+  nume: string;
+  /**
+   * Cod ISO din două litere: RO, DE, NL, US.
+   */
+  tara?: string | null;
+  /**
+   * Se acceptă cu sau fără prefixul RO.
+   */
+  cui?: string | null;
+  /**
+   * Codul verificabil în VIES. Necesar pentru taxare inversă.
+   */
+  codTvaIntracomunitar?: string | null;
+  regCom?: string | null;
+  platitorTva?: boolean | null;
+  /**
+   * Decide cum se calculează TVA-ul pe facturile acestui client. Se stabilește explicit, nu se deduce automat din țară.
+   */
+  regimFiscal: 'intern' | 'ue_taxare_inversa' | 'ue_persoana_fizica' | 'extra_ue';
+  /**
+   * Provizoriu. Se va înlocui cu relația către Contacte.
+   */
+  persoanaContact?: string | null;
+  email?: string | null;
+  telefon?: string | null;
+  website?: string | null;
+  oras?: string | null;
+  judet?: string | null;
+  adresa?: string | null;
+  moneda: 'RON' | 'EUR' | 'USD';
+  /**
+   * Din el se calculează scadența facturii.
+   */
+  termenPlata: number;
+  /**
+   * Doar dacă diferă de adresa de mai sus.
+   */
+  adresaFacturare?: string | null;
+  iban?: string | null;
+  banca?: string | null;
+  /**
+   * Se completează singur din proiectele legate de acest client.
+   */
+  proiecte?: {
+    docs?: (number | Proiecte)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Vizibile doar echipei, niciodată clientului.
+   */
+  nota?: string | null;
+  tip: 'pj' | 'pf';
+  status: 'activ' | 'prospect' | 'inactiv';
+  /**
+   * Cine din echipă ține legătura cu acest client.
+   */
+  responsabil?: (number | null) | User;
+  /**
+   * Ce canal ți-a adus clientul.
+   */
+  sursa?: ('recomandare' | 'site' | 'linkedin' | 'freelancing' | 'rece' | 'eveniment' | 'alta') | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * Lucrările în desfășurare și cele închise.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "proiecte".
+ */
+export interface Proiecte {
+  id: number;
+  nume: string;
+  descriere?: string | null;
+  dataStart?: string | null;
+  deadline?: string | null;
+  dataFinalizare?: string | null;
+  echipa?: (number | User)[] | null;
+  urlLive?: string | null;
+  urlRepo?: string | null;
+  tipFacturare: 'fix' | 'ora' | 'abonament';
+  /**
+   * Fără TVA.
+   */
+  valoare?: number | null;
+  /**
+   * Fără TVA.
+   */
+  tarifOrar?: number | null;
+  moneda: 'RON' | 'EUR' | 'USD';
+  /**
+   * Reper pentru comparația cu pontajul real.
+   */
+  oreEstimate?: number | null;
+  taskuri?: {
+    docs?: (number | Taskuri)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  nota?: string | null;
+  client: number | Clienti;
+  status: 'ofertat' | 'in_lucru' | 'in_asteptare' | 'finalizat' | 'anulat';
+  tip: 'website' | 'aplicatie' | 'brand' | 'mentenanta' | 'altul';
+  responsabil?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  /**
+   * Determină ce poate face utilizatorul în CRM.
+   */
+  roles: ('admin' | 'manager' | 'developer' | 'contabil')[];
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * Lucrările concrete de pe fiecare proiect.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "taskuri".
+ */
+export interface Taskuri {
+  id: number;
+  titlu: string;
+  descriere?: string | null;
+  /**
+   * Reper pentru comparația cu orele pontate.
+   */
+  estimareOre?: number | null;
+  deadline?: string | null;
+  pontaj?: {
+    docs?: (number | Pontaj)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  proiect: number | Proiecte;
+  status: 'de_facut' | 'in_lucru' | 'blocat' | 'gata';
+  responsabil?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * Orele lucrate. Singura sursă a liniilor de factură.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pontaj".
+ */
+export interface Pontaj {
+  id: number;
+  /**
+   * Textul poate ajunge pe factură, deci scrie-l pentru client.
+   */
+  descriere: string;
+  data: string;
+  ore: number;
+  proiect: number | Proiecte;
+  /**
+   * Opțional. Ședințele și analiza se ponteză direct pe proiect.
+   */
+  task?: (number | null) | Taskuri;
+  utilizator: number | User;
+  /**
+   * Debifează pentru garanție sau refaceri din vina noastră.
+   */
+  facturabil?: boolean | null;
+  /**
+   * Se completează automat la generarea liniilor.
+   */
+  factura?: (number | null) | Facturi;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * Facturi emise. Numerotarea se face automat la ieșirea din ciornă.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facturi".
+ */
+export interface Facturi {
+  id: number;
+  eticheta?: string | null;
+  linii?:
+    | {
+        descriere: string;
+        cantitate: number;
+        unitate: 'ore' | 'buc' | 'zile' | 'luni';
+        pretUnitar: number;
+        total?: number | null;
+        pontajIds?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  sumaIncasata?: number | null;
+  subtotal?: number | null;
+  valoareTva?: number | null;
+  total?: number | null;
+  /**
+   * Se salvează pe factură, nu se citește dintr-o setare globală. Facturile vechi păstrează cota de la data emiterii.
+   */
+  cotaTva: number;
+  /**
+   * Client UE cu cod TVA valid sau export extra-UE.
+   */
+  taxareInversa?: boolean | null;
+  moneda: 'RON' | 'EUR' | 'USD';
+  /**
+   * Cursul de la data emiterii. Se îngheață pe document.
+   */
+  cursBnr?: number | null;
+  /**
+   * Se completează automat. Dovada că documentul a plecat.
+   */
+  livrari?:
+    | {
+        data?: string | null;
+        canal?: ('email' | 'efactura' | 'manual') | null;
+        stare?: ('ok' | 'eroare') | null;
+        destinatar?: string | null;
+        detalii?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  efacturaIndex?: string | null;
+  efacturaStare?: ('netrimisa' | 'in_prelucrare' | 'acceptata' | 'respinsa' | 'eroare') | null;
+  efacturaMesaj?: string | null;
+  /**
+   * Text vizibil clientului.
+   */
+  mentiuni?: string | null;
+  nota?: string | null;
+  /**
+   * Proforma nu e document fiscal. Se convertește în factură la plată.
+   */
+  tip: 'fiscala' | 'proforma' | 'storno';
+  proformaSursa?: (number | null) | Facturi;
+  facturaStornata?: (number | null) | Facturi;
+  abonament?: (number | null) | Abonamente;
+  perioada?: string | null;
+  serie: string;
+  /**
+   * Se atribuie automat la emitere.
+   */
+  numar?: number | null;
+  /**
+   * De mână doar „Emisă”. Plata vine din încasări, iar anularea unei facturi din storno.
+   */
+  status: 'ciorna' | 'emisa' | 'partial' | 'platita' | 'anulata';
+  /**
+   * Se bifează prin acțiunea de trimitere. După, doar storno.
+   */
+  trimisa?: boolean | null;
+  dataTrimitere?: string | null;
+  client: number | Clienti;
+  /**
+   * Se alege întâi clientul.
+   */
+  proiect?: (number | null) | Proiecte;
+  dataEmitere: string;
+  dataScadenta?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * Facturare recurentă. Generează ciorne, nu facturi emise.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "abonamente".
+ */
+export interface Abonamente {
+  id: number;
+  eticheta?: string | null;
+  /**
+   * Cum îl recunoști tu: „Mentenanță lunară", „Găzduire + SSL".
+   */
+  nume: string;
+  /**
+   * Se copiază pe fiecare factură generată.
+   */
+  linii?:
+    | {
+        descriere: string;
+        cantitate: number;
+        unitate: 'ore' | 'buc' | 'zile' | 'luni';
+        pretUnitar: number;
+        total?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Fără TVA. Se recalculează la salvare.
+   */
+  valoare?: number | null;
+  /**
+   * „Mentenanță lunară” devine „Mentenanță lunară - septembrie 2026”.
+   */
+  adaugaPerioadaInDescriere?: boolean | null;
+  frecventa: 'lunar' | 'trimestrial' | 'anual';
+  /**
+   * În lunile mai scurte se coboară automat la ultima zi.
+   */
+  ziuaEmiterii: number;
+  dataStart: string;
+  /**
+   * Gol = pe termen nedeterminat.
+   */
+  dataStop?: string | null;
+  /**
+   * Se recalculează cât timp nu s-a facturat încă nimic.
+   */
+  urmatoareaEmitere?: string | null;
+  ultimaEmitere?: string | null;
+  facturiGenerate?: number | null;
+  serie: string;
+  cotaTva: number;
+  moneda: 'RON' | 'EUR' | 'USD';
+  /**
+   * Client UE cu cod TVA valid sau export extra-UE.
+   */
+  taxareInversa?: boolean | null;
+  mentiuni?: string | null;
+  /**
+   * Tot ce a ieșit din acest abonament.
+   */
+  facturi?: {
+    docs?: (number | Facturi)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  nota?: string | null;
+  /**
+   * Debifat, nu se mai generează nimic.
+   */
+  activ?: boolean | null;
+  client: number | Clienti;
+  /**
+   * Opțional. Se alege întâi clientul.
+   */
+  proiect?: (number | null) | Proiecte;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * Banii intrați efectiv. Statusul facturii se calculează din ei.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "incasari".
+ */
+export interface Incasari {
+  id: number;
+  factura: number | Facturi;
+  suma: number;
+  data: string;
+  metoda: 'transfer' | 'numerar' | 'card' | 'paypal' | 'stripe' | 'alta';
+  /**
+   * Numărul tranzacției din extrasul bancar.
+   */
+  referinta?: string | null;
+  nota?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
-  id: string;
+  id: number;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -183,11 +621,11 @@ export interface Page {
             reference?:
               | ({
                   relationTo: 'pages';
-                  value: string | Page;
+                  value: number | Page;
                 } | null)
               | ({
                   relationTo: 'posts';
-                  value: string | Post;
+                  value: number | Post;
                 } | null);
             url?: string | null;
             label: string;
@@ -199,7 +637,7 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
-    media?: (string | null) | Media;
+    media?: (number | null) | Media;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -207,7 +645,7 @@ export interface Page {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -225,9 +663,9 @@ export interface Page {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  heroImage?: (string | null) | Media;
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -243,18 +681,28 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  /**
+   * Apar la finalul articolului și pot apărea direct în rezultatele Google. Câteva întrebări reale, cu răspunsuri scurte.
+   */
+  faq?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (string | User)[] | null;
+  authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -275,7 +723,7 @@ export interface Post {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt?: string | null;
   caption?: {
     root: {
@@ -292,7 +740,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -368,18 +816,18 @@ export interface Media {
  * via the `definition` "payload-folders".
  */
 export interface FolderInterface {
-  id: string;
+  id: number;
   name: string;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   documentsAndFolders?: {
     docs?: (
       | {
           relationTo?: 'payload-folders';
-          value: string | FolderInterface;
+          value: number | FolderInterface;
         }
       | {
           relationTo?: 'media';
-          value: string | Media;
+          value: number | Media;
         }
     )[];
     hasNextPage?: boolean;
@@ -394,17 +842,17 @@ export interface FolderInterface {
  * via the `definition` "categories".
  */
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  parent?: (string | null) | Category;
+  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
-        doc?: (string | null) | Category;
+        doc?: (number | null) | Category;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -412,32 +860,6 @@ export interface Category {
     | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -467,11 +889,11 @@ export interface CallToActionBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -517,11 +939,11 @@ export interface ContentBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -542,7 +964,7 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: string | Media;
+  media: number | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -569,12 +991,12 @@ export interface ArchiveBlock {
   } | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
-  categories?: (string | Category)[] | null;
+  categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
     | {
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       }[]
     | null;
   id?: string | null;
@@ -586,7 +1008,7 @@ export interface ArchiveBlock {
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
-  form: string | Form;
+  form: number | Form;
   enableIntro?: boolean | null;
   introContent?: {
     root: {
@@ -612,7 +1034,7 @@ export interface FormBlock {
  * via the `definition` "forms".
  */
 export interface Form {
-  id: string;
+  id: number;
   title: string;
   fields?:
     | (
@@ -786,7 +1208,7 @@ export interface Form {
  * via the `definition` "redirects".
  */
 export interface Redirect {
-  id: string;
+  id: number;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -796,11 +1218,11 @@ export interface Redirect {
     reference?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     url?: string | null;
   };
@@ -812,8 +1234,8 @@ export interface Redirect {
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
-  id: string;
-  form: string | Form;
+  id: number;
+  form: number | Form;
   submissionData?:
     | {
         field: string;
@@ -831,18 +1253,18 @@ export interface FormSubmission {
  * via the `definition` "search".
  */
 export interface Search {
-  id: string;
+  id: number;
   title?: string | null;
   priority?: number | null;
   doc: {
     relationTo: 'posts';
-    value: string | Post;
+    value: number | Post;
   };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
   };
   categories?:
     | {
@@ -860,7 +1282,7 @@ export interface Search {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -877,7 +1299,7 @@ export interface PayloadKv {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -924,7 +1346,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'emiteAbonamente' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -957,10 +1379,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'emiteAbonamente' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -969,52 +1400,80 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
+        relationTo: 'clienti';
+        value: number | Clienti;
+      } | null)
+    | ({
+        relationTo: 'proiecte';
+        value: number | Proiecte;
+      } | null)
+    | ({
+        relationTo: 'taskuri';
+        value: number | Taskuri;
+      } | null)
+    | ({
+        relationTo: 'pontaj';
+        value: number | Pontaj;
+      } | null)
+    | ({
+        relationTo: 'facturi';
+        value: number | Facturi;
+      } | null)
+    | ({
+        relationTo: 'abonamente';
+        value: number | Abonamente;
+      } | null)
+    | ({
+        relationTo: 'incasari';
+        value: number | Incasari;
+      } | null)
+    | ({
         relationTo: 'pages';
-        value: string | Page;
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
-        value: string | Category;
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'redirects';
-        value: string | Redirect;
+        value: number | Redirect;
       } | null)
     | ({
         relationTo: 'forms';
-        value: string | Form;
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
-        value: string | FormSubmission;
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'search';
-        value: string | Search;
+        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-folders';
-        value: string | FolderInterface;
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -1024,10 +1483,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -1047,11 +1506,220 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clienti_select".
+ */
+export interface ClientiSelect<T extends boolean = true> {
+  nume?: T;
+  tara?: T;
+  cui?: T;
+  codTvaIntracomunitar?: T;
+  regCom?: T;
+  platitorTva?: T;
+  regimFiscal?: T;
+  persoanaContact?: T;
+  email?: T;
+  telefon?: T;
+  website?: T;
+  oras?: T;
+  judet?: T;
+  adresa?: T;
+  moneda?: T;
+  termenPlata?: T;
+  adresaFacturare?: T;
+  iban?: T;
+  banca?: T;
+  proiecte?: T;
+  nota?: T;
+  tip?: T;
+  status?: T;
+  responsabil?: T;
+  sursa?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "proiecte_select".
+ */
+export interface ProiecteSelect<T extends boolean = true> {
+  nume?: T;
+  descriere?: T;
+  dataStart?: T;
+  deadline?: T;
+  dataFinalizare?: T;
+  echipa?: T;
+  urlLive?: T;
+  urlRepo?: T;
+  tipFacturare?: T;
+  valoare?: T;
+  tarifOrar?: T;
+  moneda?: T;
+  oreEstimate?: T;
+  taskuri?: T;
+  nota?: T;
+  client?: T;
+  status?: T;
+  tip?: T;
+  responsabil?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "taskuri_select".
+ */
+export interface TaskuriSelect<T extends boolean = true> {
+  titlu?: T;
+  descriere?: T;
+  estimareOre?: T;
+  deadline?: T;
+  pontaj?: T;
+  proiect?: T;
+  status?: T;
+  responsabil?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pontaj_select".
+ */
+export interface PontajSelect<T extends boolean = true> {
+  descriere?: T;
+  data?: T;
+  ore?: T;
+  proiect?: T;
+  task?: T;
+  utilizator?: T;
+  facturabil?: T;
+  factura?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facturi_select".
+ */
+export interface FacturiSelect<T extends boolean = true> {
+  eticheta?: T;
+  linii?:
+    | T
+    | {
+        descriere?: T;
+        cantitate?: T;
+        unitate?: T;
+        pretUnitar?: T;
+        total?: T;
+        pontajIds?: T;
+        id?: T;
+      };
+  sumaIncasata?: T;
+  subtotal?: T;
+  valoareTva?: T;
+  total?: T;
+  cotaTva?: T;
+  taxareInversa?: T;
+  moneda?: T;
+  cursBnr?: T;
+  livrari?:
+    | T
+    | {
+        data?: T;
+        canal?: T;
+        stare?: T;
+        destinatar?: T;
+        detalii?: T;
+        id?: T;
+      };
+  efacturaIndex?: T;
+  efacturaStare?: T;
+  efacturaMesaj?: T;
+  mentiuni?: T;
+  nota?: T;
+  tip?: T;
+  proformaSursa?: T;
+  facturaStornata?: T;
+  abonament?: T;
+  perioada?: T;
+  serie?: T;
+  numar?: T;
+  status?: T;
+  trimisa?: T;
+  dataTrimitere?: T;
+  client?: T;
+  proiect?: T;
+  dataEmitere?: T;
+  dataScadenta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "abonamente_select".
+ */
+export interface AbonamenteSelect<T extends boolean = true> {
+  eticheta?: T;
+  nume?: T;
+  linii?:
+    | T
+    | {
+        descriere?: T;
+        cantitate?: T;
+        unitate?: T;
+        pretUnitar?: T;
+        total?: T;
+        id?: T;
+      };
+  valoare?: T;
+  adaugaPerioadaInDescriere?: T;
+  frecventa?: T;
+  ziuaEmiterii?: T;
+  dataStart?: T;
+  dataStop?: T;
+  urmatoareaEmitere?: T;
+  ultimaEmitere?: T;
+  facturiGenerate?: T;
+  serie?: T;
+  cotaTva?: T;
+  moneda?: T;
+  taxareInversa?: T;
+  mentiuni?: T;
+  facturi?: T;
+  nota?: T;
+  activ?: T;
+  client?: T;
+  proiect?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "incasari_select".
+ */
+export interface IncasariSelect<T extends boolean = true> {
+  factura?: T;
+  suma?: T;
+  data?: T;
+  metoda?: T;
+  referinta?: T;
+  nota?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1196,6 +1864,13 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
   content?: T;
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
   relatedPosts?: T;
   categories?: T;
   meta?:
@@ -1339,6 +2014,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1584,6 +2260,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1632,11 +2309,70 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Datele care apar pe facturi și pe celelalte documente.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "setari-firma".
+ */
+export interface SetariFirma {
+  id: number;
+  denumire: string;
+  /**
+   * Apare în antetul facturii.
+   */
+  logo?: (number | null) | Media;
+  email?: string | null;
+  telefon?: string | null;
+  website?: string | null;
+  cui: string;
+  regCom?: string | null;
+  /**
+   * Cum apare tipărit pe factură.
+   */
+  adresa?: string | null;
+  /**
+   * Pentru e-Factura.
+   */
+  strada?: string | null;
+  oras?: string | null;
+  /**
+   * Numele sau codul ISO: Cluj / RO-CJ.
+   */
+  judet?: string | null;
+  codPostal?: string | null;
+  capitalSocial?: string | null;
+  platitorTva?: boolean | null;
+  conturi?:
+    | {
+        iban: string;
+        banca: string;
+        moneda: 'RON' | 'EUR' | 'USD';
+        id?: string | null;
+      }[]
+    | null;
+  serieImplicita?: string | null;
+  /**
+   * Separată, ca numerotarea fiscală să rămână un șir curat.
+   */
+  serieProforma?: string | null;
+  cotaTvaImplicita?: number | null;
+  /**
+   * Text tipărit la finalul fiecărei facturi.
+   */
+  mentiuniImplicite?: string | null;
+  /**
+   * Textul propus în corpul emailului. Se poate rescrie la fiecare trimitere.
+   */
+  mesajEmailImplicit?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
 export interface Header {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1645,11 +2381,11 @@ export interface Header {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1665,7 +2401,7 @@ export interface Header {
  * via the `definition` "footer".
  */
 export interface Footer {
-  id: string;
+  id: number;
   navItems?:
     | {
         link: {
@@ -1674,11 +2410,11 @@ export interface Footer {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -1688,6 +2424,60 @@ export interface Footer {
     | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "setari-firma_select".
+ */
+export interface SetariFirmaSelect<T extends boolean = true> {
+  denumire?: T;
+  logo?: T;
+  email?: T;
+  telefon?: T;
+  website?: T;
+  cui?: T;
+  regCom?: T;
+  adresa?: T;
+  strada?: T;
+  oras?: T;
+  judet?: T;
+  codPostal?: T;
+  capitalSocial?: T;
+  platitorTva?: T;
+  conturi?:
+    | T
+    | {
+        iban?: T;
+        banca?: T;
+        moneda?: T;
+        id?: T;
+      };
+  serieImplicita?: T;
+  serieProforma?: T;
+  cotaTvaImplicita?: T;
+  mentiuniImplicite?: T;
+  mesajEmailImplicit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1737,6 +2527,16 @@ export interface FooterSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -1744,6 +2544,23 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskEmiteAbonamente".
+ */
+export interface TaskEmiteAbonamente {
+  input: {
+    /**
+     * Facturează tot ce e scadent până la această dată. Gol = azi.
+     */
+    panaLa?: string | null;
+  };
+  output: {
+    generate?: number | null;
+    sarite?: number | null;
+    jurnal?: string | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1756,14 +2573,14 @@ export interface TaskSchedulePublish {
     doc?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: (number | null) | User;
   };
   output?: unknown;
 }

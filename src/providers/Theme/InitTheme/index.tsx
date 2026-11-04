@@ -40,6 +40,8 @@ export const InitTheme: React.FC = () => {
     }
 
     document.documentElement.setAttribute('data-theme', themeToSet)
+    // Radix Themes reads the appearance from a class, not from the attribute.
+    document.documentElement.classList.toggle('dark', themeToSet === 'dark')
   })();
   `,
       }}

@@ -14,13 +14,16 @@ import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+  // Just the title: the site's layout appends '| <brand>' to every page title.
+  return doc?.title ?? ''
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
+const generateURL: GenerateURL<Post | Page> = ({ doc, collectionConfig }) => {
   const url = getServerSideURL()
+  // Posts live under /blog; pages sit at the root.
+  const prefix = collectionConfig?.slug === 'posts' ? '/blog' : ''
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  return doc?.slug ? `${url}${prefix}/${doc.slug}` : url
 }
 
 export const plugins: Plugin[] = [

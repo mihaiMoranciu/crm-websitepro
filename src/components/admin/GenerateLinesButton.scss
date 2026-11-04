@@ -1,0 +1,119 @@
+.generate-lines {
+  margin-bottom: calc(var(--base) * 0.8);
+  padding: calc(var(--base) * 0.7);
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-50);
+
+  &--empty {
+    color: var(--theme-elevation-500);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--base) * 0.6);
+    flex-wrap: wrap;
+    padding-bottom: calc(var(--base) * 0.4);
+    border-bottom: 1px solid var(--theme-border-color);
+  }
+
+  &__total {
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-elevation-700);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0 0 calc(var(--base) * 0.6);
+    padding: 0;
+    max-height: calc(var(--base) * 12);
+    overflow-y: auto;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--base) * 0.5);
+    padding: calc(var(--base) * 0.28) 0;
+    cursor: pointer;
+    border-bottom: 1px solid var(--theme-elevation-100);
+
+    &:hover {
+      color: var(--brand);
+    }
+  }
+
+  &__date {
+    flex-shrink: 0;
+    width: calc(var(--base) * 3);
+    color: var(--theme-elevation-500);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__desc {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__hours {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-elevation-700);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--base) * 0.8);
+    flex-wrap: wrap;
+
+    .btn {
+      margin: 0;
+    }
+  }
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    color: var(--theme-elevation-700);
+    cursor: pointer;
+  }
+
+  &__hint {
+    margin: calc(var(--base) * 0.4) 0 0;
+    color: var(--theme-elevation-500);
+    font-size: calc(var(--base) * 0.55);
+  }
+
+  &__unlink {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--base) * 0.5);
+    flex-wrap: wrap;
+    margin-top: calc(var(--base) * 0.4);
+    padding-top: calc(var(--base) * 0.4);
+    border-top: 1px solid var(--theme-border-color);
+
+    .btn {
+      margin: 0;
+    }
+
+    .generate-lines__hint {
+      margin: 0;
+    }
+  }
+
+  &__message {
+    margin: calc(var(--base) * 0.4) 0 0;
+    color: var(--brand);
+
+    &--error {
+      color: var(--theme-error-600);
+    }
+  }
+}

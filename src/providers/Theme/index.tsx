@@ -25,11 +25,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       window.localStorage.removeItem(themeLocalStorageKey)
       const implicitPreference = getImplicitPreference()
       document.documentElement.setAttribute('data-theme', implicitPreference || '')
+      document.documentElement.classList.toggle('dark', implicitPreference === 'dark')
       if (implicitPreference) setThemeState(implicitPreference)
     } else {
       setThemeState(themeToSet)
       window.localStorage.setItem(themeLocalStorageKey, themeToSet)
       document.documentElement.setAttribute('data-theme', themeToSet)
+      // Radix Themes reads the appearance from a class, not from the attribute.
+      document.documentElement.classList.toggle('dark', themeToSet === 'dark')
     }
   }, [])
 
@@ -48,6 +51,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     document.documentElement.setAttribute('data-theme', themeToSet)
+    // Radix Themes reads the appearance from a class, not from the attribute.
+    document.documentElement.classList.toggle('dark', themeToSet === 'dark')
     setThemeState(themeToSet)
   }, [])
 

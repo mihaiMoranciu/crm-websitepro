@@ -1,0 +1,86 @@
+/*
+ * Design tokens: the names components use, mapped onto Radix's scales.
+ *
+ * Write CSS against these roles (`--brand-solid`, `--text-muted`) rather than
+ * against raw scale steps or hex values. The colours themselves are chosen in
+ * `theme.ts`; light and dark mode come for free, because every token points at
+ * a Radix variable that already switches with the appearance.
+ *
+ * Scoped to `.radix-themes` because that is where Radix defines the accent and
+ * grey scales; on :root they do not exist yet.
+ */
+.radix-themes {
+  /* Typography */
+  --default-font-family: var(--font-plex-sans), system-ui, sans-serif;
+  --heading-font-family: var(--font-plex-sans), system-ui, sans-serif;
+  --code-font-family: var(--font-plex-mono), ui-monospace, monospace;
+  --strong-font-weight: 600;
+  --heading-letter-spacing: -0.01em;
+
+  /* Brand (green) */
+  --brand-solid: var(--accent-9);
+  --brand-solid-hover: var(--accent-10);
+  --brand-on-solid: var(--accent-contrast);
+  --brand-text: var(--accent-11);
+  --brand-soft: var(--accent-3);
+  --brand-soft-hover: var(--accent-4);
+  --brand-line: var(--accent-6);
+
+  /* Highlight (the partner colour), used sparingly */
+  --highlight-solid: var(--highlight-9);
+  --highlight-text: var(--highlight-11);
+  --highlight-soft: var(--highlight-3);
+  --highlight-line: var(--highlight-6);
+
+  /* Surfaces */
+  --surface-page: var(--color-background);
+  --surface-sunken: var(--gray-2);
+  --surface-raised: var(--color-panel-solid);
+  --surface-hover: var(--gray-3);
+
+  /* Text */
+  --text-strong: var(--gray-12);
+  --text-muted: var(--gray-11);
+  --text-faint: var(--gray-10);
+
+  /* Lines */
+  --line-subtle: var(--gray-a5);
+  --line: var(--gray-a6);
+  --line-strong: var(--gray-a8);
+  --focus-ring: var(--accent-8);
+
+  /* Status */
+  --status-success: var(--grass-11);
+  --status-warning: var(--amber-11);
+  --status-danger: var(--red-11);
+
+  /* Layout: Radix supplies --space-1..9 (4px to 64px); these are page-level. */
+  --content-width: 90rem;
+  --reading-width: 42rem;
+  --gutter: var(--space-5);
+  --section-gap: var(--space-9);
+
+  /*
+   * The page frame: two rails from top to bottom and a rule between sections.
+   * Solid grey rather than alpha, so a rail crossing a rule does not stack
+   * into a darker dot.
+   */
+  --frame-line: var(--gray-6);
+  --frame-inset: var(--space-3);
+  --frame-width: min(var(--content-width), 100% - 2 * var(--frame-inset));
+  --header-height: 60px;
+}
+
+@media (min-width: 48rem) {
+  .radix-themes {
+    --gutter: var(--space-7);
+    --frame-inset: var(--space-6);
+  }
+}
+
+/* On a wide frame the content sits further in from the rails, as in a print margin. */
+@media (min-width: 80rem) {
+  .radix-themes {
+    --gutter: var(--space-9);
+  }
+}
