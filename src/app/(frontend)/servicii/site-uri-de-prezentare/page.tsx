@@ -8,7 +8,8 @@ import highlands from '@/assets/landscapes/highlands.webp'
 import layeredHills from '@/assets/landscapes/layered-hills.webp'
 import mistyForest from '@/assets/landscapes/misty-forest.webp'
 import { gridLinesClass, Section, TintCard } from '@/components/site/Frame'
-import { Faq, type FaqItem } from '@/components/site/Faq'
+import { Faq } from '@/components/site/Faq'
+import { PRESENTATION_SITES_FAQ } from '@/components/site/faqs'
 import { FlowingGradient } from '@/components/site/FlowingGradient'
 import { NOISE } from '@/components/site/HeroGlow'
 import { Highlight } from '@/components/site/Highlight'
@@ -40,33 +41,7 @@ const TITLE = 'Creare site de prezentare pentru firme'
 const DESCRIPTION =
   'Site de prezentare rapid, ușor de administrat și gândit să fie găsit pe Google. Vezi ce include, cum lucrăm și cum se stabilește prețul.'
 
-const FAQ: FaqItem[] = [
-  {
-    question: 'Cât costă un site de prezentare?',
-    answer:
-      'Depinde de câte pagini are, dacă textele și pozele le ai deja și de ce trebuie să facă în plus (rezervări, mai multe limbi, blog). Prețul îl primești fix, în scris, înainte să începem, și nu se schimbă pe parcurs dacă nu se schimbă cerințele.',
-  },
-  {
-    question: 'În cât timp e gata site-ul?',
-    answer:
-      'De obicei câteva săptămâni, în funcție de numărul de pagini și de cât de repede avem textele și pozele. Termenul exact e scris în propunere.',
-  },
-  {
-    question: 'Pot modifica singur textele și pozele?',
-    answer:
-      'Da. Site-ul vine cu un panou de administrare în română, din care schimbi texte, poze și articole fără să atingi codul. La lansare îți arătăm cum se folosește.',
-  },
-  {
-    question: 'Site-ul apare în Google de la început?',
-    answer:
-      'Îl trimitem la Google în ziua lansării și apare de obicei în câteva zile. Locul pe care îl ocupă în rezultate se construiește în timp, din conținut bun și din viteza site-ului, iar pe amândouă le pregătim de la început.',
-  },
-  {
-    question: 'Ce se întâmplă după lansare?',
-    answer:
-      'Site-ul, domeniul și codul sunt ale tale. Dacă vrei ca cineva să se ocupe în continuare de actualizări, copii de siguranță și modificări, avem și mentenanță lunară.',
-  },
-]
+const FAQ = PRESENTATION_SITES_FAQ
 
 /* A panel floating on a photo or a gradient: solid, softly lifted. */
 const floatingPanel =

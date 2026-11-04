@@ -18,9 +18,9 @@ import {
  * The site's main navigation. An entry either links somewhere or opens a
  * panel of grouped links, the way the header's large menu shows them.
  *
- * TODO: most of these pages don't exist yet (each service gets its own page,
- * plus "Despre noi" and the FAQ). Create them in the admin under Pages with
- * these slugs, or change the links here when the real URLs are decided.
+ * Every page linked here is written in code under src/app/(frontend). The
+ * contact page is still missing: "Contact" points at the home page's
+ * contact section until it exists.
  */
 
 export type NavLink = { label: string; href: string; icon: LucideIcon }

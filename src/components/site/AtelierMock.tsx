@@ -18,7 +18,7 @@ import { cn } from '@/utilities/ui'
  * photo-1611021061285 (carving) and photo-1600585154340 (wooden house).
  */
 
-const serif = IBM_Plex_Serif({
+export const atelierSerif = IBM_Plex_Serif({
   subsets: ['latin', 'latin-ext'],
   weight: ['500', '600'],
   style: ['normal', 'italic'],
@@ -34,15 +34,21 @@ export const ATELIER = {
   woodenHouse,
 }
 
-/* The workshop's palette. */
-const INK = '#121412'
-const OAK = '#c79b6b'
-const BONE = '#efede8'
+/* The workshop's palette, also shown as its brand sheet on the identity page. */
+export const INK = '#121412'
+export const OAK = '#c79b6b'
+export const BONE = '#efede8'
 
 /** The headline, with the material set in the oak colour. */
 function Title({ className }: { className?: string }) {
   return (
-    <p className={cn(serif.className, 'm-0 leading-[1.1] font-medium text-balance', className)}>
+    <p
+      className={cn(
+        atelierSerif.className,
+        'm-0 leading-[1.1] font-medium text-balance',
+        className,
+      )}
+    >
       Uși și ferestre din <em style={{ color: OAK }}>lemn masiv</em>, făcute pe măsură
     </p>
   )
@@ -52,7 +58,10 @@ function Title({ className }: { className?: string }) {
 export function AtelierMark({ size = 22 }: { size?: number }) {
   return (
     <span
-      className={cn(serif.className, 'grid shrink-0 place-items-center font-semibold italic')}
+      className={cn(
+        atelierSerif.className,
+        'grid shrink-0 place-items-center font-semibold italic',
+      )}
       style={{
         width: size,
         height: size,
@@ -67,11 +76,11 @@ export function AtelierMark({ size = 22 }: { size?: number }) {
   )
 }
 
-function Wordmark({ size = 'text-[13px]' }: { size?: string }) {
+export function AtelierWordmark({ size = 'text-[13px]' }: { size?: string }) {
   return (
     <span className="flex items-center gap-2">
       <AtelierMark />
-      <span className={cn(serif.className, size, 'font-semibold')} style={{ color: BONE }}>
+      <span className={cn(atelierSerif.className, size, 'font-semibold')} style={{ color: BONE }}>
         {ATELIER.brand}
       </span>
     </span>
@@ -99,7 +108,7 @@ export function AtelierDesktop() {
           }}
         />
         <div className="flex items-center gap-4 px-5 pt-4 text-[11px]">
-          <Wordmark />
+          <AtelierWordmark />
           <span className="ml-auto flex gap-3.5" style={{ color: 'rgb(239 237 232 / 0.7)' }}>
             {ATELIER.nav.map((item) => (
               <span key={item}>{item}</span>
@@ -142,7 +151,7 @@ export function AtelierDesktop() {
             className="px-4 py-3"
             style={{ borderLeft: i ? '1px solid rgb(239 237 232 / 0.12)' : undefined }}
           >
-            <p className={cn(serif.className, 'm-0 text-[12px] font-medium')}>{title}</p>
+            <p className={cn(atelierSerif.className, 'm-0 text-[12px] font-medium')}>{title}</p>
             <p className="m-0 mt-0.5" style={{ color: 'rgb(239 237 232 / 0.55)' }}>
               {note}
             </p>
@@ -174,7 +183,7 @@ export function AtelierPhone() {
           }}
         />
         <div className="flex items-center justify-between px-4 pt-4">
-          <Wordmark size="text-[12px]" />
+          <AtelierWordmark size="text-[12px]" />
           <Menu size={16} strokeWidth={1.5} aria-hidden />
         </div>
         <div className="flex flex-col gap-2.5 px-4 pt-24 pb-5">
@@ -194,7 +203,9 @@ export function AtelierPhone() {
         </div>
       </div>
       <div className="px-4 pt-4 pb-5">
-        <p className={cn(serif.className, 'm-0 mb-2.5 text-[13px] font-medium')}>Lucrări recente</p>
+        <p className={cn(atelierSerif.className, 'm-0 mb-2.5 text-[13px] font-medium')}>
+          Lucrări recente
+        </p>
         <div className="relative aspect-[16/10] overflow-hidden rounded-[3px]">
           <Image src={woodenHouse} alt="" fill sizes="248px" className="object-cover" />
         </div>

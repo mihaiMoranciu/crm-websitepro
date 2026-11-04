@@ -10,7 +10,8 @@ import {
 } from 'lucide-react'
 
 import { gridLinesClass, Section, TintCard } from '@/components/site/Frame'
-import { Faq, type FaqItem } from '@/components/site/Faq'
+import { Faq } from '@/components/site/Faq'
+import { MAINTENANCE_FAQ } from '@/components/site/faqs'
 import { FlowingGradient } from '@/components/site/FlowingGradient'
 import { NOISE } from '@/components/site/HeroGlow'
 import { Highlight } from '@/components/site/Highlight'
@@ -65,33 +66,7 @@ const IN_PLAN = [
 ]
 const SEPARATE = ['Pagini sau funcții noi', 'Redesign', 'Integrări cu alte programe']
 
-const FAQ: FaqItem[] = [
-  {
-    question: 'Ce înseamnă mentenanța unui site?',
-    answer:
-      'Tot ce ține site-ul sigur și funcțional după lansare: actualizări de securitate, copii de siguranță, reînnoirea certificatului și a domeniului, verificarea că site-ul răspunde și micile modificări de conținut.',
-  },
-  {
-    question: 'Am nevoie de mentenanță dacă site-ul merge bine acum?',
-    answer:
-      'Site-urile nu se strică de la sine, dar programele pe care rulează primesc constant actualizări de securitate. Un site lăsat neactualizat ani de zile devine ținta ușoară a atacurilor automate, iar o problemă apărută atunci e mai scumpă decât prevenirea ei.',
-  },
-  {
-    question: 'Preluați și site-uri făcute de altcineva?',
-    answer:
-      'Da. Ne uităm întâi pe site și îți spunem în scris în ce stare e, ce trebuie reparat înainte și cât ar costa mentenanța lunară.',
-  },
-  {
-    question: 'Cât costă mentenanța unui site?',
-    answer:
-      'Depinde de site: un site de prezentare cere mai puțină muncă decât un magazin online cu plăți și stocuri. Prețul lunar îl primești în scris după ce vedem site-ul, și nu se schimbă fără să te anunțăm.',
-  },
-  {
-    question: 'Ce se întâmplă cu site-ul dacă renunț la abonament?',
-    answer:
-      'Site-ul rămâne al tău. Îți predăm accesul la găzduire, domeniu și cod, plus ultima copie de siguranță, ca să-l poată prelua oricine.',
-  },
-]
+const FAQ = MAINTENANCE_FAQ
 
 /* The last 30 days as status bars: one short outage, fixed the same day. */
 const DAYS = Array.from({ length: 30 }, (_, i) => (i === 19 ? 'incident' : 'ok'))
