@@ -1,6 +1,6 @@
 import React from 'react'
 import { Badge, Table } from '@radix-ui/themes'
-import { CreditCard, FileCheck2, ShoppingBag, TicketPercent, Truck } from 'lucide-react'
+import { CreditCard, FileCheck2, Shirt, ShoppingBag, TicketPercent, Truck } from 'lucide-react'
 
 import { Section } from '@/components/site/Frame'
 import { SHOPS_FAQ } from '@/components/site/faqs'
@@ -19,7 +19,7 @@ import {
   SplitHeader,
   Statement,
 } from '@/components/site/PageParts'
-import { Jar, ShopShowcase } from '@/components/site/ShopShowcase'
+import { ShopShowcase } from '@/components/site/ShopShowcase'
 import { buildMeta } from '@/utilities/seo'
 import { breadcrumbSchema, faqSchema, serviceSchema } from '@/utilities/structuredData'
 import { cn } from '@/utilities/ui'
@@ -33,7 +33,8 @@ import { cn } from '@/utilities/ui'
  * The page argues one thing: a shop is the work that happens after the
  * customer pays. So under the title sits the shop itself, one order played
  * through in three steps, then what it connects to, then the owner's side as
- * a bento of the screens they use. "Cămara de la deal" is a made-up shop.
+ * a bento of the screens they use. The shop is a generic "Firma ta", with
+ * plain product categories: no made-up brand.
  */
 
 const PATH = '/servicii/magazine-online'
@@ -65,7 +66,7 @@ const ORDERS: { id: string; client: string; total: string; cells: [string, Tone]
   {
     id: '#1048',
     client: 'Ana Pop',
-    total: '97,00',
+    total: '238,00',
     cells: [
       ['Plătită', 'grass'],
       ['În SPV', 'grass'],
@@ -105,9 +106,9 @@ const ORDERS: { id: string; client: string; total: string; cells: [string, Tone]
 ]
 
 const STOCK: { name: string; left: number; of: number; tone: string; note?: [string, Tone] }[] = [
-  { name: 'Miere de salcâm', left: 24, of: 30, tone: 'var(--grass-9)' },
-  { name: 'Zacuscă', left: 3, of: 30, tone: 'var(--amber-9)', note: ['pe terminate', 'amber'] },
-  { name: 'Sirop de soc', left: 0, of: 30, tone: 'var(--red-9)', note: ['epuizat', 'red'] },
+  { name: 'Tricou', left: 24, of: 30, tone: 'var(--grass-9)' },
+  { name: 'Cană', left: 3, of: 30, tone: 'var(--amber-9)', note: ['pe terminate', 'amber'] },
+  { name: 'Rucsac', left: 0, of: 30, tone: 'var(--red-9)', note: ['epuizat', 'red'] },
 ]
 
 const PLATFORM_ENOUGH = [
@@ -195,8 +196,8 @@ function StockMock() {
 
 function DiscountMock() {
   const rows: [string, string, boolean?][] = [
-    ['Subtotal', '82,00'],
-    ['TOAMNA10', '-8,20', true],
+    ['Subtotal', '223,00'],
+    ['TOAMNA10', '-22,30', true],
     ['Livrare', '15,00'],
   ]
   return (
@@ -219,7 +220,7 @@ function DiscountMock() {
         ))}
         <div className="mt-1 flex justify-between border-t border-frame pt-2 text-sm font-medium text-strong">
           <dt>Total</dt>
-          <dd className="m-0 tabular-nums">88,80 lei</dd>
+          <dd className="m-0 tabular-nums">215,70 lei</dd>
         </div>
       </dl>
     </div>
@@ -235,8 +236,8 @@ function ProductFormMock() {
         'absolute top-0 right-0 left-6 grid grid-cols-[7rem_1fr] gap-4 rounded-r-none p-4 text-xs sm:grid-cols-[9rem_1fr]',
       )}
     >
-      <div className="grid aspect-square place-items-center rounded-(--radius-3) bg-(--gray-a2) shadow-[inset_0_0_0_1px_var(--gray-a4)]">
-        <Jar tone="var(--amber-8)" />
+      <div className="grid aspect-square place-items-center rounded-(--radius-3) bg-(--gray-a2) text-(--gray-11) shadow-[inset_0_0_0_1px_var(--gray-a4)]">
+        <Shirt size={56} strokeWidth={0.9} />
       </div>
       <div className="flex min-w-0 flex-col gap-2.5">
         <span className="flex items-center justify-between gap-3">
@@ -248,13 +249,13 @@ function ProductFormMock() {
             </span>
           </span>
         </span>
-        <span className={field}>Miere de salcâm</span>
+        <span className={field}>Tricou din bumbac</span>
         <span className="grid grid-cols-2 gap-2.5">
-          <span className={field}>32,00 lei</span>
+          <span className={field}>89,00 lei</span>
           <span className={field}>24 buc.</span>
         </span>
         <span className="flex flex-wrap gap-1.5">
-          {['250 g', '500 g', '1 kg'].map((v, i) => (
+          {['S', 'M', 'L', 'XL'].map((v, i) => (
             <span
               key={v}
               className={cn(

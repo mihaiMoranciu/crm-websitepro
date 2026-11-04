@@ -19,8 +19,9 @@ import { cn } from '@/utilities/ui'
 import { marked, MockFrame, ShowcaseLayout, type Step, useSteps } from './Showcase'
 
 /*
- * The web app showcase: "Mobila Nord", a made-up furniture maker that kept
- * its orders in a spreadsheet. Three things a custom app changes: everything
+ * The web app showcase: a generic company, "Firma ta", whose orders used to
+ * live in a spreadsheet. Clients are named only by kind and town, so no
+ * made-up brand shows up anywhere. Three things a custom app changes: everything
  * in one place, each person seeing only their part, and the repeated steps
  * done by the app. Sample data throughout.
  */
@@ -34,7 +35,7 @@ const STEPS: Step[] = [
   {
     icon: UserCog,
     title: 'Fiecare vede ce îl privește.',
-    text: 'Atelierul vede producția, contabilitatea vede facturile, iar prețurile rămân la cine trebuie.',
+    text: 'Producția vede ce are de lucrat, contabilitatea vede facturile, iar prețurile rămân la cine trebuie.',
   },
   {
     icon: Zap,
@@ -70,8 +71,8 @@ const ROWS: {
   tone: Tone
 }[] = [
   {
-    client: 'Biroul Nova',
-    what: 'Recepție',
+    client: 'Birou, București',
+    what: '#2041',
     due: '10 nov.',
     value: '7.300',
     who: 'DC',
@@ -79,8 +80,8 @@ const ROWS: {
     tone: 'gray',
   },
   {
-    client: 'Hotel Sigma',
-    what: '40 de scaune',
+    client: 'Hotel, Sibiu',
+    what: '#2040',
     due: '18 nov.',
     value: '12.400',
     who: 'AM',
@@ -88,8 +89,8 @@ const ROWS: {
     tone: 'amber',
   },
   {
-    client: 'Școala nr. 7',
-    what: 'Bănci, 2 săli',
+    client: 'Școală, Cluj',
+    what: '#2039',
     due: '22 nov.',
     value: '8.900',
     who: 'RI',
@@ -97,8 +98,8 @@ const ROWS: {
     tone: 'iris',
   },
   {
-    client: 'Cafe Doi',
-    what: 'Mese terasă',
+    client: 'Cafenea, Iași',
+    what: '#2038',
     due: '15 nov.',
     value: '5.600',
     who: 'AM',
@@ -106,8 +107,8 @@ const ROWS: {
     tone: 'iris',
   },
   {
-    client: 'Pensiunea Ana',
-    what: 'Paturi, 6 camere',
+    client: 'Pensiune, Brașov',
+    what: '#2037',
     due: '2 dec.',
     value: '14.200',
     who: 'RI',
@@ -116,12 +117,12 @@ const ROWS: {
   },
 ]
 
-/* Who the restricted view belongs to: Andrei, from the workshop. */
+/* Whose view the restricted step shows: someone from production. */
 const WORKSHOP = 'AM'
 
 /* Columns of the order table, the same template for the header and the rows. */
 const COLS =
-  'grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1.4fr_4rem_5rem_1.75rem_6.5rem] lg:grid-cols-[1.3fr_1.2fr_4rem_5rem_1.75rem_6.5rem]'
+  'grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1.4fr_4rem_5rem_1.75rem_6.5rem] lg:grid-cols-[1.4fr_3.5rem_4rem_5rem_1.75rem_6.5rem]'
 
 export function AppShowcase() {
   const { ref, active, select } = useSteps(STEPS.length)
@@ -146,7 +147,7 @@ export function AppShowcase() {
         >
           <span className="mb-3 flex items-center gap-2 px-2 pt-1 text-sm font-semibold tracking-tight text-strong">
             <span className="size-3 rounded-[3px] bg-(--accent-9)" />
-            Mobila Nord
+            Firma ta
           </span>
           {NAV.map(({ icon: Icon, label, open }, i) => (
             <span
@@ -181,7 +182,7 @@ export function AppShowcase() {
                   restricted ? 'opacity-100' : 'opacity-0',
                 )}
               >
-                Vezi ca: Andrei, atelier
+                Vezi ca: producție
               </span>
               <span className="grid size-6 place-items-center rounded-full bg-(--gray-a4) text-[10px] font-medium text-strong">
                 {restricted ? 'AM' : 'DC'}
@@ -212,7 +213,7 @@ export function AppShowcase() {
               )}
             >
               <span>Client</span>
-              <span className="hidden lg:block">Produs</span>
+              <span className="hidden lg:block">Nr.</span>
               <span className="hidden sm:block">Termen</span>
               <span className="hidden text-right sm:block">Lei</span>
               <span className="hidden sm:block" />
@@ -220,7 +221,7 @@ export function AppShowcase() {
             </div>
             {ROWS.map((row) => {
               const mine = row.who === WORKSHOP
-              const done = automated && row.client === 'Biroul Nova'
+              const done = automated && row.what === '#2041'
               return (
                 <div
                   key={row.client}
@@ -232,7 +233,7 @@ export function AppShowcase() {
                   )}
                 >
                   <span className="truncate text-strong">{row.client}</span>
-                  <span className="hidden truncate text-subtle lg:block">{row.what}</span>
+                  <span className="hidden text-subtle tabular-nums lg:block">{row.what}</span>
                   <span className="hidden text-subtle sm:block">{row.due}</span>
                   <span className="hidden justify-end text-strong tabular-nums sm:flex">
                     {restricted ? (
@@ -269,13 +270,13 @@ export function AppShowcase() {
             <span className="grid size-5 place-items-center rounded-full bg-(--accent-a3) text-(--accent-11)">
               <Zap size={11} strokeWidth={2} />
             </span>
-            Biroul Nova a primit comanda
+            Comanda #2041 a fost livrată
           </span>
           <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0 text-xs text-subtle">
             {[
-              'Factura MN-0412 a fost emisă',
+              'Factura FT-0412 a fost emisă',
               'Clientul a primit emailul cu factura',
-              'Dana a fost anunțată să urmărească plata',
+              'Contabilitatea urmărește plata',
             ].map((line) => (
               <li key={line} className="flex items-center gap-2">
                 <Check size={12} strokeWidth={2} className="shrink-0 text-(--accent-11)" />

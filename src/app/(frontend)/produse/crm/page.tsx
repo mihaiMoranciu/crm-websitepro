@@ -42,7 +42,8 @@ import { cn } from '@/utilities/ui'
  * subscription projects, billable hours turned into invoice lines, proformas,
  * storno, RON/EUR/USD with the BNR rate, payments that set the invoice state,
  * subscription drafts, and e-Factura sent to and read back from the SPV.
- * Keep it that way when the app changes. The figures are sample data.
+ * Keep it that way when the app changes. The figures are sample data, and
+ * clients go by their kind of business, never by a made-up name.
  */
 
 const PATH = '/produse/crm'
@@ -53,11 +54,11 @@ const DESCRIPTION =
 type Tone = 'gray' | 'amber' | 'iris' | 'grass' | 'red'
 
 const INVOICES: [string, string, string, string, Tone][] = [
-  ['WP-0145', 'Atelier Lemn', '3.388,00', 'Ciornă', 'gray'],
-  ['WP-0144', 'Velo Tur Cluj', '1.450,00', 'Parțial', 'amber'],
-  ['WP-0143', 'Brutăria Ardealul', '4.200,00', 'În SPV', 'iris'],
-  ['WP-0142', 'Clinica Dentară Lumina', '6.830,00', 'Plătită', 'grass'],
-  ['WP-0141', 'Profil Nord', '2.100,00', 'Restantă', 'red'],
+  ['WP-0145', 'Atelier de tâmplărie', '3.388,00', 'Ciornă', 'gray'],
+  ['WP-0144', 'Agenție de turism', '1.450,00', 'Parțial', 'amber'],
+  ['WP-0143', 'Brutărie', '4.200,00', 'În SPV', 'iris'],
+  ['WP-0142', 'Clinică stomatologică', '6.830,00', 'Plătită', 'grass'],
+  ['WP-0141', 'Firmă de construcții', '2.100,00', 'Restantă', 'red'],
 ]
 
 const MODULES: { icon: LucideIcon; name: string; text: string }[] = [
@@ -160,7 +161,7 @@ function InvoiceList() {
 /** One invoice's trip through the SPV, as it is recorded on the invoice. */
 function SpvLog() {
   return (
-    <TintedWindow hue="grass" icon={FileCheck2} title="WP-0143, Brutăria Ardealul" note="e-Factura">
+    <TintedWindow hue="grass" icon={FileCheck2} title="Factura WP-0143" note="e-Factura">
       <ol className="m-0 list-none divide-y divide-frame p-0">
         {SPV_LOG.map(([time, what, detail]) => (
           <li key={what} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-sm">

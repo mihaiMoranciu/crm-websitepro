@@ -1,8 +1,8 @@
 import React from 'react'
 import { Heading, Text } from '@radix-ui/themes'
-import { X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
-import { ATELIER, AtelierPhone, atelierSerif, BONE, INK, OAK } from '@/components/site/AtelierMock'
+import { atelierSerif, BONE, INK, OAK } from '@/components/site/AtelierMock'
 import { gridLinesClass, Section, TintCard } from '@/components/site/Frame'
 import { IDENTITY_FAQ } from '@/components/site/faqs'
 import { Highlight } from '@/components/site/Highlight'
@@ -29,10 +29,9 @@ import { cn } from '@/utilities/ui'
  * (docs/seo/keyword-map.md), with logo design and brand guidelines as the
  * variants.
  *
- * The example brand is Atelier Lemn, the made-up carpentry workshop whose
- * site the presentation sites page shows. Here it is shown the other way
- * round: the brand sheet first, then the same brand tested small, in black
- * and white, and on the things it ends up on.
+ * The example brand is a generic "Firma ta", not a made-up company: a
+ * serif, three colours and a monogram, shown as a brand sheet, then tested
+ * small, in black and white, and on the things it ends up on.
  */
 
 const PATH = '/servicii/identitate-vizuala'
@@ -40,10 +39,12 @@ const TITLE = 'Identitate vizuală și logo pentru firme'
 const DESCRIPTION =
   'Logo, culori, fonturi și un ghid de brand care se aplică la fel pe site, pe facturi și pe materialele tipărite.'
 
+const BRAND = { name: 'Firma ta', domain: 'firma-ta.ro' }
+
 const PALETTE: [string, string][] = [
-  ['Negru pădure', INK],
-  ['Stejar', OAK],
-  ['Var', BONE],
+  ['Principală', INK],
+  ['Accent', OAK],
+  ['Fundal', BONE],
 ]
 
 const DELIVERABLES: [string, string][] = [
@@ -58,7 +59,7 @@ const DELIVERABLES: [string, string][] = [
 const PAPER = '#fbfaf7'
 
 /**
- * The workshop's mark at any size and in any colour. Below 24px the initials
+ * The brand's mark at any size and in any colour. Below 24px the initials
  * stop being readable, so the small version keeps only the first letter:
  * the simplified mark a favicon needs.
  */
@@ -80,12 +81,12 @@ function Mark({ size, color }: { size: number; color: string }) {
         borderRadius: Math.max(2, size / 8),
       }}
     >
-      {short ? 'A' : 'AL'}
+      {short ? 'F' : 'FT'}
     </span>
   )
 }
 
-/** The hero: the first page of the workshop's brand guide. */
+/** The hero: the first page of the brand guide. */
 function BrandSheet() {
   return (
     <TintCard hue="grass" className="w-full p-5 sm:p-10">
@@ -93,7 +94,7 @@ function BrandSheet() {
       <div className={cn('overflow-hidden rounded-(--radius-4)', floatingPanel)}>
         <div className="flex items-center gap-3 border-b border-frame px-4 py-3 text-sm">
           <span className="font-medium text-strong">Ghid de brand</span>
-          <span className="ml-auto text-subtle">{ATELIER.brand}</span>
+          <span className="ml-auto text-subtle">{BRAND.name}</span>
         </div>
 
         <div className="flex items-center gap-4 px-6 py-10 sm:px-8" style={{ background: INK }}>
@@ -103,10 +104,10 @@ function BrandSheet() {
               className={cn(atelierSerif.className, 'block text-[28px] font-semibold')}
               style={{ color: BONE }}
             >
-              {ATELIER.brand}
+              {BRAND.name}
             </span>
             <span className="block text-xs" style={{ color: 'rgb(239 237 232 / 0.6)' }}>
-              Uși și ferestre din lemn masiv, Brașov
+              {BRAND.domain}
             </span>
           </span>
         </div>
@@ -171,7 +172,7 @@ function SizeTest() {
           {/* A browser tab, the place a 16px mark actually lives. */}
           <span className="flex items-center gap-2 rounded-t-(--radius-2) bg-(--gray-a3) px-2.5 py-1.5">
             <Mark size={16} color={INK} />
-            <span className="text-[11px] text-strong">{ATELIER.brand}</span>
+            <span className="text-[11px] text-strong">{BRAND.name}</span>
             <X size={10} strokeWidth={2} aria-hidden className="text-subtle" />
           </span>
           <span className={caption}>16 px, în tab</span>
@@ -206,10 +207,10 @@ function BusinessCard() {
         <Mark size={24} color={OAK} />
         <span className="leading-tight">
           <span className={cn(atelierSerif.className, 'block text-[15px] font-medium')}>
-            Andrei Munteanu
+            Numele tău
           </span>
           <span className="block text-[10px]" style={{ color: 'rgb(239 237 232 / 0.6)' }}>
-            tâmplar, {ATELIER.domain}
+            funcția ta, {BRAND.domain}
           </span>
         </span>
       </div>
@@ -230,10 +231,10 @@ function InvoiceHead() {
       >
         <Mark size={22} color={INK} />
         <span className={cn(atelierSerif.className, 'text-[13px] font-semibold')}>
-          {ATELIER.brand}
+          {BRAND.name}
         </span>
         <span className="ml-auto text-right text-[10px] leading-tight">
-          <span className="block font-medium">Factura AL-0021</span>
+          <span className="block font-medium">Factura FT-0021</span>
           <span className="block" style={{ color: 'rgb(18 20 18 / 0.55)' }}>
             12 noiembrie 2026
           </span>
@@ -241,8 +242,8 @@ function InvoiceHead() {
       </div>
       <div className="mt-3 flex flex-col gap-1.5 text-[10px]">
         {[
-          ['Ușă de exterior, stejar', '3.400,00'],
-          ['Montaj', '850,00'],
+          ['Produs sau serviciu', '3.400,00'],
+          ['Transport', '850,00'],
         ].map(([what, sum]) => (
           <span key={what} className="flex justify-between">
             <span>{what}</span>
@@ -261,11 +262,51 @@ function InvoiceHead() {
   )
 }
 
-/** The site on a phone, cut off by the bottom of its box like a screenshot. */
+/**
+ * The brand's site on a phone, cut off by the bottom of its box like a
+ * screenshot: the header, the opening line in the title font, the button in
+ * the accent colour and a picture block.
+ */
 function SitePhone() {
+  const line = (width: string) => (
+    <span
+      className="block h-[7px] rounded-full"
+      style={{ width, background: 'rgb(239 237 232 / 0.35)' }}
+    />
+  )
   return (
-    <div className="mx-auto w-[248px] translate-y-10 overflow-hidden rounded-t-[2rem] border-[6px] border-b-0 border-(--gray-12) shadow-[0_16px_36px_-18px_rgb(0_0_0/0.5)] dark:border-(--gray-6)">
-      <AtelierPhone />
+    <div
+      className="mx-auto w-[248px] translate-y-10 overflow-hidden rounded-t-[2rem] border-[6px] border-b-0 border-(--gray-12) shadow-[0_16px_36px_-18px_rgb(0_0_0/0.5)] dark:border-(--gray-6)"
+      style={{ background: INK, color: BONE }}
+    >
+      <div className="flex items-center justify-between px-4 pt-5">
+        <span className="flex items-center gap-2">
+          <Mark size={20} color={OAK} />
+          <span className={cn(atelierSerif.className, 'text-[12px] font-semibold')}>
+            {BRAND.name}
+          </span>
+        </span>
+        <Menu size={16} strokeWidth={1.5} />
+      </div>
+      <div className="flex flex-col gap-2 px-4 pt-12">
+        <p className={cn(atelierSerif.className, 'm-0 text-[21px] leading-[1.15] font-medium')}>
+          Ce faceți, spus <em style={{ color: OAK }}>clar</em>.
+        </p>
+        <span className="mt-1 flex flex-col gap-1.5">
+          {line('90%')}
+          {line('64%')}
+        </span>
+        <span
+          className="mt-3 rounded-[3px] py-2 text-center text-[11px] font-medium"
+          style={{ background: OAK, color: INK }}
+        >
+          Cere o ofertă
+        </span>
+      </div>
+      <div
+        className="mx-4 mt-5 aspect-[16/10] rounded-[3px]"
+        style={{ background: `linear-gradient(135deg, ${OAK}, rgb(199 155 107 / 0.2))` }}
+      />
     </div>
   )
 }

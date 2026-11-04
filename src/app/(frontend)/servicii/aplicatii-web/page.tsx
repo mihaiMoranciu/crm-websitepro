@@ -43,9 +43,9 @@ import { cn } from '@/utilities/ui'
  * comandă" (docs/seo/keyword-map.md). The variants (cost, owning the code,
  * connecting existing software, upkeep) are the questions at the bottom.
  *
- * Under the title sits an app as a team would use it, "Mobila Nord", a
- * made-up furniture maker that kept its orders in a spreadsheet, played
- * through in three steps. The bento shows the parts most such apps grow:
+ * Under the title sits an app as a team would use it, for a generic
+ * "Firma ta" whose orders used to live in a spreadsheet, played through in
+ * three steps. No made-up brands: clients and orders go by kind and number. The bento shows the parts most such apps grow:
  * a client portal, roles, connections and a history of changes. The
  * examples describe kinds of work, not named clients.
  */
@@ -117,7 +117,7 @@ function PortalMock() {
   return (
     <div className={cn(bentoPanel, 'absolute top-0 right-0 left-6 rounded-r-none p-5 text-xs')}>
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-medium text-strong">40 de scaune, Hotel Sigma</span>
+        <span className="text-sm font-medium text-strong">Comanda ta #2040</span>
         <span className="hidden text-subtle sm:inline">livrare estimată 18 nov.</span>
       </div>
       <ol className="m-0 mt-5 grid list-none grid-cols-4 gap-2 p-0">
@@ -136,7 +136,7 @@ function PortalMock() {
         ))}
       </ol>
       <ul className="m-0 mt-5 list-none divide-y divide-frame border-t border-frame p-0">
-        {['Oferta acceptată.pdf', 'Proforma MN-0398.pdf'].map((doc) => (
+        {['Oferta acceptată.pdf', 'Proforma FT-0398.pdf'].map((doc) => (
           <li key={doc} className="flex items-center gap-2 py-2.5">
             <FileText size={14} strokeWidth={1.5} className="text-subtle" />
             <span className="text-strong">{doc}</span>
@@ -153,7 +153,7 @@ function RolesMock() {
   const cols = ['Comenzi', 'Prețuri', 'Facturi']
   const rows: [string, boolean[]][] = [
     ['Vânzări', [true, true, false]],
-    ['Atelier', [true, false, false]],
+    ['Producție', [true, false, false]],
     ['Contabilitate', [true, true, true]],
   ]
   return (
@@ -239,17 +239,17 @@ function HistoryMock() {
       who: 'DC',
       what: (
         <>
-          Dana a mutat termenul pentru Cafe Doi:{' '}
+          Termen mutat pentru comanda #2038:{' '}
           <span className="text-subtle line-through">12 nov.</span> 15 nov.
         </>
       ),
       when: 'azi, 11:20',
     },
-    { who: 'RI', what: 'Radu a trecut Școala nr. 7 în producție', when: 'ieri, 16:05' },
+    { who: 'RI', what: 'Comanda #2039 a trecut în producție', when: 'ieri, 16:05' },
     {
       who: '',
       app: true,
-      what: 'Aplicația a emis factura MN-0412 pentru Biroul Nova',
+      what: 'Factura FT-0412 emisă automat pentru comanda #2041',
       when: 'ieri, 09:12',
     },
   ]
@@ -330,8 +330,8 @@ export default function WebAppsPage() {
       <Section id="exemplu" className="scroll-mt-(--header-height)">
         <SplitHeader
           label="Un exemplu"
-          title="Comenzile unui atelier de mobilă, scoase din Excel"
-          text="Un caz inventat, dar tipic: o firmă care ținea comenzile într-un tabel trimis pe email și afla stadiul lor la telefon."
+          title="Comenzile firmei tale, scoase din Excel"
+          text="Un caz tipic: comenzile ținute într-un tabel trimis pe email, iar stadiul lor aflat la telefon. Așa arată aceleași comenzi într-o aplicație."
         />
         <AppShowcase />
       </Section>
