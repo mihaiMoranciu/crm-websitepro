@@ -13,9 +13,9 @@ import {
 import { gridLinesClass, Section } from '@/components/site/Frame'
 import { HeroGlow } from '@/components/site/HeroGlow'
 import { HeroMockups } from '@/components/site/HeroMockups'
+import { HomeShowcase } from '@/components/site/HomeShowcase'
 import { Highlight } from '@/components/site/Highlight'
 import { QuoteButton } from '@/components/site/QuoteButton'
-import { Projects } from '@/components/site/Projects'
 import { ServicesCarousel } from '@/components/site/ServicesCarousel'
 import { SiteChecks } from '@/components/site/SiteChecks'
 import { StepIllustration } from '@/components/site/StepIllustration'
@@ -168,12 +168,21 @@ export default async function HomePage() {
         <ServicesCarousel />
       </Section>
 
-      {/* Recent work, right after what we do: the proof before the argument. */}
-      <Section id="proiecte" className="scroll-mt-(--header-height)">
-        <Heading as="h2" size={TYPE.display} className="mb-12 max-w-4xl text-balance">
-          Ce am <Highlight>livrat</Highlight> recent
-        </Heading>
-        <Projects />
+      {/* The whole path of one request, when the same team builds every part of it. */}
+      <Section id="cum-se-leaga" className="scroll-mt-(--header-height)">
+        <div className="mb-12 grid gap-6 lg:grid-cols-[3fr_2fr] lg:items-end lg:gap-16">
+          <Heading as="h2" size={TYPE.display} className="max-w-4xl text-balance">
+            Site-ul, aplicația și facturarea,{' '}
+            <span className="whitespace-nowrap">
+              <Highlight>legate</Highlight> între ele
+            </span>
+          </Heading>
+          <Text as="p" size={TYPE.body} color="gray" className="max-w-[46ch] text-pretty">
+            Pentru că le construim pe toate, o cerere de pe site nu se pierde între emailuri. Ajunge
+            în aplicația firmei, devine proiect și se încheie cu factura trimisă în SPV.
+          </Text>
+        </div>
+        <HomeShowcase />
       </Section>
 
       {/* The argument of the whole site, made by showing instead of telling. */}

@@ -50,16 +50,16 @@ const PETROL = '#1f4d4a'
 const MUTED = 'rgb(23 25 28 / 0.6)'
 const HAIRLINE = 'rgb(23 25 28 / 0.1)'
 
-const NAV = ['Ferestre', 'Uși', 'Lucrări', 'Despre']
+const NAV = ['Servicii', 'Lucrări', 'Despre', 'Contact']
 
 const STATS = [
-  ['1.200+', 'ferestre montate'],
-  ['10 ani', 'garanție'],
+  ['12 ani', 'de experiență'],
+  ['300+', 'clienți'],
   ['4,9', 'în recenziile Google'],
 ]
 
 /**
- * A real page for a made-up client, written and set the way a person would:
+ * A generic client's page, "Firma ta", written and set the way a person would:
  * actual words in the menu, the headline and the buttons. Grey placeholder
  * bars where copy should be are what generated mockups look like, and this
  * section is the one place on the page that must not.
@@ -78,18 +78,15 @@ export function ClientSite() {
       >
         <span className="flex items-center gap-[1cqw] text-[2.3cqw] font-semibold tracking-tight">
           <span className="size-[2cqw] rounded-[0.4cqw]" style={{ background: PETROL }} />
-          Profil Nord
+          Firma ta
         </span>
         <span className="flex gap-[2.4cqw] text-[1.6cqw]" style={{ color: MUTED }}>
           {NAV.map((item) => (
             <span key={item}>{item}</span>
           ))}
         </span>
-        <span className="ml-auto text-[1.6cqw] tabular-nums" style={{ color: MUTED }}>
-          0744 218 903
-        </span>
         <span
-          className="rounded-[0.8cqw] px-[1.8cqw] py-[0.9cqw] text-[1.6cqw] font-medium"
+          className="ml-auto rounded-[0.8cqw] px-[1.8cqw] py-[0.9cqw] text-[1.6cqw] font-medium"
           style={{ background: INK, color: PAPER }}
         >
           Cere ofertă
@@ -101,24 +98,23 @@ export function ClientSite() {
           className="text-[1.4cqw] font-medium tracking-[0.14em] uppercase"
           style={{ color: MUTED }}
         >
-          Tâmplărie PVC și aluminiu, Cluj
+          Firma ta, în orașul tău
         </span>
         <span className="mt-[2.2cqw] text-[5.4cqw] leading-[1.04] font-semibold tracking-[-0.03em]">
-          Ferestre care țin casa caldă.
+          Spune clar ce faci.
         </span>
         <span
           className="mt-[2.4cqw] max-w-[48cqw] text-[1.9cqw] leading-[1.5]"
           style={{ color: MUTED }}
         >
-          Măsurăm, producem și montăm în trei săptămâni, cu garanție de 10 ani pentru profil și
-          montaj.
+          Vizitatorul înțelege în câteva secunde ce oferi, pentru cine și cum te poate contacta.
         </span>
         <span className="mt-[3.4cqw] flex gap-[1.6cqw]">
           <span
             className="rounded-[0.8cqw] px-[2.6cqw] py-[1.3cqw] text-[1.8cqw] font-medium"
             style={{ background: PETROL, color: '#ffffff' }}
           >
-            Cere o măsurătoare
+            Cere o ofertă
           </span>
           <span
             className="rounded-[0.8cqw] border px-[2.6cqw] py-[1.3cqw] text-[1.8cqw] font-medium"
@@ -166,7 +162,7 @@ export function SiteChecks() {
         <div className="overflow-hidden rounded-(--radius-4) border border-(--gray-a7) bg-(--color-panel-solid) shadow-[0_24px_60px_-28px_var(--gray-a9)]">
           <div className="flex h-9 items-center justify-center border-b border-frame bg-(--gray-2)">
             <span className="rounded-full bg-(--gray-a3) px-4 py-0.5 text-xs text-subtle">
-              profilnord.ro
+              firma-ta.ro
             </span>
           </div>
           <div className="relative aspect-[4/3] overflow-hidden [container-type:inline-size]">
@@ -187,14 +183,14 @@ export function SiteChecks() {
           <Flex align="center" gap="2">
             <span className="size-4 rounded-[4px]" style={{ background: PETROL }} />
             <Text size="1" color="gray">
-              profilnord.ro
+              firma-ta.ro
             </Text>
           </Flex>
           <Text as="p" size="2" weight="medium" mt="1" className="text-(--blue-11)">
-            Ferestre PVC în Cluj | Profil Nord
+            Serviciul tău, în orașul tău | Firma ta
           </Text>
           <Text as="p" size="1" color="gray" mt="1">
-            Măsurăm, producem și montăm în trei săptămâni. Garanție 10 ani.
+            Ce oferi și pentru cine, spus pe scurt. Cere o ofertă online.
           </Text>
         </Card>
       </Reveal>

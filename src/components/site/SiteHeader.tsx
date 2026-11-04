@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
+import { Logo } from '@/components/Logo/Logo'
 import { siteConfig } from '@/utilities/siteConfig'
 
 import { Section } from './Frame'
@@ -21,12 +22,8 @@ export function SiteHeader() {
   return (
     <Section as="header" padded={false} className="sticky top-0 z-20 bg-page">
       <div className="flex h-(--header-height) items-center gap-5 px-(--gutter)">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 font-semibold tracking-tight text-strong no-underline"
-        >
-          <span className="size-2.5 rounded-[2px] bg-brand" aria-hidden />
-          {siteConfig.name}
+        <Link href="/" className="no-underline" aria-label={`${siteConfig.name}, acasă`}>
+          <Logo name={siteConfig.name} />
         </Link>
 
         <DesktopNav />

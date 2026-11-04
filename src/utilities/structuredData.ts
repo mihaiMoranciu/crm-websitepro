@@ -38,7 +38,7 @@ export function organizationSchema(company?: Partial<SetariFirma> | null): Schem
     name: siteConfig.name,
     legalName: company?.denumire || undefined,
     url: absolute('/'),
-    logo: absolute('/favicon.svg'),
+    logo: absolute('/brand/logo-512.png'),
     image: absolute(siteConfig.ogImage),
     description: siteConfig.description,
     email: company?.email || undefined,

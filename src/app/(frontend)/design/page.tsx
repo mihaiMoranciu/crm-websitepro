@@ -16,6 +16,7 @@ import {
   TextField,
 } from '@radix-ui/themes'
 
+import { Logo, LogoIcon, LogoMark, LogoTile } from '@/components/Logo/Logo'
 import { BRAND, GRAY, HIGHLIGHT } from '@/design/theme'
 
 /**
@@ -87,6 +88,51 @@ export default function DesignPage() {
             Schimbă tema din subsol ca să vezi și varianta întunecată.
           </Text>
         </Box>
+
+        <Flex direction="column" gap="5">
+          <Heading size="5">Logo</Heading>
+          <Text as="p" size="2" color="gray" style={{ maxWidth: 'var(--reading-width)' }}>
+            Un W din două V-uri, cu trapezul din hero între ele. Componentele sunt în{' '}
+            <Code>src/components/Logo/Logo.tsx</Code>, fișierele în <Code>public/brand</Code>.
+          </Text>
+          <Flex gap="8" wrap="wrap" align="end">
+            <Flex direction="column" gap="2">
+              <LogoMark style={{ height: 84, width: 'auto' }} />
+              <Text size="1" color="gray">
+                LogoMark
+              </Text>
+            </Flex>
+            <Flex direction="column" gap="2">
+              <LogoMark variant="outline" style={{ height: 84, width: 'auto' }} />
+              <Text size="1" color="gray">
+                LogoMark, outline
+              </Text>
+            </Flex>
+            <Flex direction="column" gap="2">
+              <LogoTile className="size-16" />
+              <Text size="1" color="gray">
+                LogoTile
+              </Text>
+            </Flex>
+            <Flex direction="column" gap="2">
+              <Flex gap="3" align="center" style={{ height: 30 }}>
+                <LogoIcon />
+                <LogoIcon width={30} height={30} />
+              </Flex>
+              <Text size="1" color="gray">
+                LogoIcon, 15px
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex gap="5" wrap="wrap" align="center">
+            <Logo className="text-2xl" />
+            <Button size="3" variant="soft" color="gray">
+              <LogoIcon /> WebsitePro
+            </Button>
+          </Flex>
+        </Flex>
+
+        <Separator size="4" />
 
         <Flex direction="column" gap="5">
           <Heading size="5">Culori</Heading>

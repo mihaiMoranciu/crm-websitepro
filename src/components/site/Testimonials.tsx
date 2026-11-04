@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Flex, Text } from '@radix-ui/themes'
-import { ArrowRight, Quote } from 'lucide-react'
+import { Building2, Quote } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 
 import { TYPE } from '@/design/type'
@@ -14,14 +14,14 @@ import { TintCard } from './Frame'
  * TODO before launch: these are placeholder testimonials that only show the
  * layout. Publishing invented quotes from invented people is a fake review,
  * and it would undo everything the page argues. Replace them with real ones,
- * with the client's permission, or remove the section.
+ * with the client's permission, or remove the section. Until then they name
+ * no one: only the role and the kind of business.
  */
 const FEATURED = {
   quote:
     'Înainte primeam cereri de ofertă doar la telefon. Acum vin din site, cu dimensiunile deja completate, și le răspundem în aceeași zi.',
-  name: 'Andrei Mureșan',
   role: 'Administrator',
-  company: 'Profil Nord',
+  business: 'Firmă de tâmplărie',
   place: 'Cluj-Napoca',
 }
 
@@ -29,16 +29,14 @@ const OTHERS = [
   {
     quote:
       'Comenzile, plățile și facturile se leagă singure. Nu mai copiem nimic de mână dintr-un loc în altul.',
-    name: 'Ioana Rusu',
     role: 'Fondatoare',
-    company: 'Cămara de Sus',
+    business: 'Magazin online de produse locale',
   },
   {
     quote:
       'Când a căzut serverul vechiului furnizor, ne-au mutat site-ul în aceeași seară. De atunci nu ne mai gândim la el.',
-    name: 'Elena Vasilescu',
     role: 'Medic coordonator',
-    company: 'Clinica Lumina',
+    business: 'Clinică medicală',
   },
 ]
 
@@ -72,31 +70,22 @@ const QuoteMark = () => (
   <Quote aria-hidden size={28} strokeWidth={0} fill="currentColor" className="text-(--accent-9)" />
 )
 
-/** Who said it: initials in place of a photo, name, role. */
-function Author({ name, role, aside }: { name: string; role: string; aside?: string }) {
-  const initials = name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
+/** Who said it: their role and the kind of business, no names. */
+function Author({ role, business }: { role: string; business: string }) {
   return (
     <Flex asChild align="center" gap="3" className="mt-auto border-t border-frame pt-5">
       <figcaption>
-        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-(--accent-a3) text-sm font-medium text-(--accent-11)">
-          {initials}
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-(--accent-a3) text-(--accent-11)">
+          <Building2 size={18} strokeWidth={1.5} aria-hidden />
         </span>
         <span className="flex min-w-0 flex-1 flex-col">
           <Text size="3" weight="medium">
-            {name}
-          </Text>
-          <Text size="2" color="gray">
             {role}
           </Text>
-        </span>
-        {aside ? (
-          <Text size="2" weight="medium" className="text-subtle">
-            {aside}
+          <Text size="2" color="gray">
+            {business}
           </Text>
-        ) : null}
+        </span>
       </figcaption>
     </Flex>
   )
@@ -111,19 +100,6 @@ export function Testimonials() {
     <div className="grid gap-4 lg:gap-6">
       <Reveal order={0} className={cn(CARD, 'grid gap-2 p-2 lg:grid-cols-2')}>
         <div className="flex flex-col gap-8 p-6 lg:p-8">
-          <Flex align="center" justify="end" gap="4">
-            <a
-              href="#proiecte"
-              className="group flex items-center gap-2 font-mono text-xs tracking-wider text-(--accent-11) uppercase no-underline"
-            >
-              Vezi proiectul
-              <ArrowRight
-                size={16}
-                strokeWidth={1.5}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </a>
-          </Flex>
           <div>
             <QuoteMark />
             <blockquote className="m-0 mt-4">
@@ -132,10 +108,10 @@ export function Testimonials() {
               </Text>
             </blockquote>
           </div>
-          <Author name={FEATURED.name} role={`${FEATURED.role}, ${FEATURED.company}`} />
+          <Author role={FEATURED.role} business={FEATURED.business} />
         </div>
 
-        {/* The client's name on the brand's tint, where a photo of them will go. */}
+        {/* The kind of business on the brand's tint, where a photo of them will go. */}
         <TintCard
           hue="grass"
           className="flex min-h-[280px] flex-col justify-end gap-2 rounded-(--radius-4) p-6 shadow-none lg:p-8"
@@ -144,7 +120,7 @@ export function Testimonials() {
             {FEATURED.place}
           </span>
           <span className="text-5xl font-bold tracking-tight text-strong lg:text-6xl">
-            {FEATURED.company}
+            {FEATURED.business}
           </span>
         </TintCard>
       </Reveal>
@@ -152,7 +128,7 @@ export function Testimonials() {
       <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
         {OTHERS.map((item, i) => (
           <Reveal
-            key={item.name}
+            key={item.business}
             order={i + 1}
             className={cn(CARD, 'flex flex-col gap-6 p-6 lg:p-8')}
           >
@@ -162,7 +138,7 @@ export function Testimonials() {
                 {item.quote}
               </Text>
             </blockquote>
-            <Author name={item.name} role={item.role} aside={item.company} />
+            <Author role={item.role} business={item.business} />
           </Reveal>
         ))}
       </div>

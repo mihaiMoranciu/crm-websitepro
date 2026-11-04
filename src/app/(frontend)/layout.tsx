@@ -37,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
         {/* Who publishes the site, on every page, for search engines. */}
         <JsonLd data={[organizationSchema(company), websiteSchema()]} />
       </head>

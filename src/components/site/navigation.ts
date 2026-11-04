@@ -20,7 +20,8 @@ import {
  *
  * Every page linked here is written in code under src/app/(frontend). The
  * contact page is still missing: "Contact" points at the home page's
- * contact section until it exists.
+ * contact section until it exists. "Proiecte" comes back as a top-level
+ * link once projects are published from the admin.
  */
 
 export type NavLink = { label: string; href: string; icon: LucideIcon }
@@ -77,5 +78,4 @@ export const NAV: NavEntry[] = [
       },
     ],
   },
-  { label: 'Proiecte', href: '/#proiecte' },
 ]

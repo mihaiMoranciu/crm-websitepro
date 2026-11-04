@@ -39,6 +39,11 @@ export default buildConfig({
       beforeDashboard: ['@/components/BeforeDashboard'],
       // The panel has no built-in link back to the homepage.
       beforeNavLinks: ['@/components/admin/NavDashboardLink#NavDashboardLink'],
+      // The brand on the login screen and in the navigation.
+      graphics: {
+        Logo: '@/components/Logo/AdminGraphics#AdminLogo',
+        Icon: '@/components/Logo/AdminGraphics#AdminIcon',
+      },
       views: {
         // Replaces the panel homepage at /admin with the CRM dashboard, so the
         // whole tool lives behind a single shell, navigation and login.

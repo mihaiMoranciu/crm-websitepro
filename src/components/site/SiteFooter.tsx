@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Flex, Heading, Text } from '@radix-ui/themes'
 
+import { Logo } from '@/components/Logo/Logo'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { siteConfig } from '@/utilities/siteConfig'
 
@@ -66,7 +67,7 @@ export async function SiteFooter() {
             transparent so the colour underneath shows through. */}
         <div className="grid grid-cols-1 divide-y divide-frame *:px-(--gutter) *:py-(--space-8) md:grid-cols-[2fr_1fr_1fr_1fr] md:divide-x md:divide-y-0">
           <Flex direction="column" gap="2">
-            <Text weight="medium">{siteConfig.name}</Text>
+            <Logo name={siteConfig.name} className="font-medium" />
             <Text size="2" color="gray" className="max-w-[32ch]">
               {siteConfig.socialDescription}
             </Text>
