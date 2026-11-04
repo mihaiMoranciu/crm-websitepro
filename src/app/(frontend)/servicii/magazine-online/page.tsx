@@ -1,25 +1,25 @@
 import React from 'react'
-import { Badge, Heading, Table, Text } from '@radix-ui/themes'
-import { Check, ShoppingBag } from 'lucide-react'
+import { Badge, Table } from '@radix-ui/themes'
+import { CreditCard, FileCheck2, ShoppingBag, TicketPercent, Truck } from 'lucide-react'
 
-import mistyForest from '@/assets/landscapes/misty-forest.webp'
-import { gridLinesClass, Section } from '@/components/site/Frame'
+import { Section } from '@/components/site/Frame'
 import { SHOPS_FAQ } from '@/components/site/faqs'
 import { Highlight } from '@/components/site/Highlight'
 import { JsonLd } from '@/components/site/JsonLd'
-import { LandscapeCard } from '@/components/site/LandscapeCard'
 import {
-  Body,
+  Bento,
+  BentoCell,
+  bentoPanel,
+  CenteredHero,
   ClosingCta,
   FaqSection,
+  FeatureCards,
   Labelled,
-  PageHero,
   PlainList,
+  SplitHeader,
   Statement,
-  TintedWindow,
-  Window,
 } from '@/components/site/PageParts'
-import { TYPE } from '@/design/type'
+import { Jar, ShopShowcase } from '@/components/site/ShopShowcase'
 import { buildMeta } from '@/utilities/seo'
 import { breadcrumbSchema, faqSchema, serviceSchema } from '@/utilities/structuredData'
 import { cn } from '@/utilities/ui'
@@ -31,9 +31,9 @@ import { cn } from '@/utilities/ui'
  * questions at the bottom.
  *
  * The page argues one thing: a shop is the work that happens after the
- * customer pays. So the pictures are that work, one order followed from the
- * payment to the courier, and the orders table the owner reads every day.
- * "Cămara de la deal" is a made-up shop, the local producer the home page shows.
+ * customer pays. So under the title sits the shop itself, one order played
+ * through in three steps, then what it connects to, then the owner's side as
+ * a bento of the screens they use. "Cămara de la deal" is a made-up shop.
  */
 
 const PATH = '/servicii/magazine-online'
@@ -41,81 +41,73 @@ const TITLE = 'Creare magazin online, cu plăți și facturare'
 const DESCRIPTION =
   'Magazin online cu plăți, livrare și facturare legate între ele, ca să nu mai copiezi comenzi de mână. Vezi ce include, cum lucrăm și cum se stabilește prețul.'
 
-/* One order, from the moment it is paid, as the shop records it. */
-const ORDER_EVENTS: [string, string, string][] = [
-  ['10:42', 'Plată acceptată', 'card, 97,00 lei'],
-  ['10:42', 'Factură emisă', 'seria CDD, nr. 0318'],
-  ['10:43', 'Trimisă în SPV', 'ca e-Factura'],
-  ['10:43', 'AWB generat', 'ridicare mâine dimineață'],
-  ['10:43', 'Email către client', 'factura și numărul AWB'],
-]
-
-/* Where each part of the shop connects, and what happens there without anyone typing. */
-const LINKS: { system: string; name: string; text: string }[] = [
+const CONNECTIONS = [
   {
-    system: 'procesator de plăți',
-    name: 'Plăți',
-    text: 'Card, ramburs sau transfer bancar. Când banii sunt confirmați, comanda își schimbă singură starea.',
+    icon: CreditCard,
+    title: 'Plăți',
+    text: 'Card, ramburs sau transfer bancar. Când banii sunt confirmați de procesatorul de plăți, comanda își schimbă singură starea.',
   },
   {
-    system: 'ANAF',
-    name: 'Facturare',
-    text: 'Factura se emite la plată, cu seria firmei tale, și pleacă în SPV ca e-Factura.',
+    icon: FileCheck2,
+    title: 'e-Factura',
+    text: 'Factura se emite la plată, cu seria firmei tale, și pleacă în SPV. Dacă ai deja un program de facturare, comanda ajunge acolo.',
   },
   {
-    system: 'curier',
-    name: 'Livrare',
-    text: 'AWB-ul se generează din comandă, cu adresa și greutatea deja completate.',
-  },
-  {
-    system: 'catalog',
-    name: 'Stoc',
-    text: 'Ce se vinde scade din stoc, iar un produs epuizat nu mai poate fi comandat.',
+    icon: Truck,
+    title: 'Curier',
+    text: 'AWB-ul se generează din comandă, cu adresa și greutatea completate, iar numărul lui ajunge la client pe email.',
   },
 ]
 
 type Tone = 'grass' | 'amber' | 'gray' | 'red'
 
-const ORDERS: {
-  id: string
-  client: string
-  total: string
-  payment: [string, Tone]
-  invoice: [string, Tone]
-  delivery: [string, Tone]
-}[] = [
+const ORDERS: { id: string; client: string; total: string; cells: [string, Tone][] }[] = [
   {
     id: '#1048',
     client: 'Ana Pop',
     total: '97,00',
-    payment: ['Plătită', 'grass'],
-    invoice: ['În SPV', 'grass'],
-    delivery: ['AWB generat', 'grass'],
+    cells: [
+      ['Plătită', 'grass'],
+      ['În SPV', 'grass'],
+      ['AWB generat', 'grass'],
+    ],
   },
   {
     id: '#1047',
     client: 'Radu Ionescu',
     total: '154,00',
-    payment: ['Ramburs', 'gray'],
-    invoice: ['În SPV', 'grass'],
-    delivery: ['La curier', 'grass'],
+    cells: [
+      ['Ramburs', 'gray'],
+      ['În SPV', 'grass'],
+      ['La curier', 'grass'],
+    ],
   },
   {
     id: '#1046',
     client: 'Ioana Marin',
     total: '63,00',
-    payment: ['Eșuată', 'red'],
-    invoice: ['Neemisă', 'gray'],
-    delivery: ['În așteptare', 'amber'],
+    cells: [
+      ['Eșuată', 'red'],
+      ['Neemisă', 'gray'],
+      ['În așteptare', 'amber'],
+    ],
   },
   {
     id: '#1045',
     client: 'Mihai Stan',
     total: '212,00',
-    payment: ['Plătită', 'grass'],
-    invoice: ['În SPV', 'grass'],
-    delivery: ['Livrată', 'gray'],
+    cells: [
+      ['Plătită', 'grass'],
+      ['În SPV', 'grass'],
+      ['Livrată', 'gray'],
+    ],
   },
+]
+
+const STOCK: { name: string; left: number; of: number; tone: string; note?: [string, Tone] }[] = [
+  { name: 'Miere de salcâm', left: 24, of: 30, tone: 'var(--grass-9)' },
+  { name: 'Zacuscă', left: 3, of: 30, tone: 'var(--amber-9)', note: ['pe terminate', 'amber'] },
+  { name: 'Sirop de soc', left: 0, of: 30, tone: 'var(--red-9)', note: ['epuizat', 'red'] },
 ]
 
 const PLATFORM_ENOUGH = [
@@ -129,55 +121,11 @@ const CUSTOM_WORTH = [
   'Plătești lunar extensii care nu se înțeleg între ele',
 ]
 
-/** The hero: one order followed from the payment to the email the customer gets. */
-function OrderTimeline() {
+/** The orders table, cropped by the bottom of its cell. */
+function OrdersMock() {
   return (
-    <LandscapeCard
-      image={mistyForest}
-      position="50% 45%"
-      priority
-      className="flex min-h-[420px] w-full items-center justify-center p-5 sm:p-10"
-    >
-      <Window
-        icon={ShoppingBag}
-        title="Comanda #1048"
-        note="camara-de-la-deal.ro"
-        className="w-full max-w-[440px]"
-      >
-        <div className="flex items-baseline justify-between gap-3 border-b border-frame px-4 py-3 text-sm">
-          <span className="text-strong">2 × Miere, 1 × Zacuscă, livrare</span>
-          <span className="whitespace-nowrap text-subtle tabular-nums">97,00 lei</span>
-        </div>
-        <ol className="m-0 list-none px-4 py-4">
-          {ORDER_EVENTS.map(([time, what, detail], i) => (
-            <li key={what} className="relative flex gap-3 pb-4 last:pb-0">
-              {i < ORDER_EVENTS.length - 1 ? (
-                <span
-                  aria-hidden
-                  className="absolute top-6 bottom-0 left-[9.5px] w-px bg-(--gray-a5)"
-                />
-              ) : null}
-              <span className="relative mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-(--accent-a3) text-(--accent-11)">
-                <Check size={12} strokeWidth={2.25} aria-hidden />
-              </span>
-              <span className="min-w-0 flex-1 text-sm leading-snug">
-                <span className="block text-strong">{what}</span>
-                <span className="block text-subtle">{detail}</span>
-              </span>
-              <span className="text-xs text-subtle tabular-nums">{time}</span>
-            </li>
-          ))}
-        </ol>
-      </Window>
-    </LandscapeCard>
-  )
-}
-
-/** The orders as the owner reads them: what was paid, invoiced and shipped. */
-function OrdersTable() {
-  return (
-    <TintedWindow hue="violet" title="Comenzi" note="azi">
-      <Table.Root size="1" className="[&_td]:align-middle">
+    <div className={cn(bentoPanel, 'absolute top-0 right-0 left-6 overflow-hidden rounded-r-none')}>
+      <Table.Root size="1">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeaderCell>Comanda</Table.ColumnHeaderCell>
@@ -187,31 +135,141 @@ function OrdersTable() {
             <Table.ColumnHeaderCell className="hidden md:table-cell">
               Factură
             </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Livrare</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className="hidden sm:table-cell">
+              Livrare
+            </Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {ORDERS.map((order) => (
-            <Table.Row key={order.id}>
-              <Table.RowHeaderCell className="tabular-nums">{order.id}</Table.RowHeaderCell>
-              <Table.Cell className="hidden sm:table-cell">{order.client}</Table.Cell>
+          {ORDERS.map(({ id, client, total, cells: [pay, invoice, delivery] }) => (
+            <Table.Row key={id}>
+              <Table.RowHeaderCell className="tabular-nums">{id}</Table.RowHeaderCell>
+              <Table.Cell className="hidden sm:table-cell">{client}</Table.Cell>
               <Table.Cell justify="end" className="tabular-nums">
-                {order.total}
+                {total}
               </Table.Cell>
               <Table.Cell>
-                <Badge color={order.payment[1]}>{order.payment[0]}</Badge>
+                <Badge color={pay[1]}>{pay[0]}</Badge>
               </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
-                <Badge color={order.invoice[1]}>{order.invoice[0]}</Badge>
+                <Badge color={invoice[1]}>{invoice[0]}</Badge>
               </Table.Cell>
-              <Table.Cell>
-                <Badge color={order.delivery[1]}>{order.delivery[0]}</Badge>
+              <Table.Cell className="hidden sm:table-cell">
+                <Badge color={delivery[1]}>{delivery[0]}</Badge>
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-    </TintedWindow>
+    </div>
+  )
+}
+
+function StockMock() {
+  return (
+    <div className={cn(bentoPanel, 'absolute inset-x-6 top-0 flex flex-col gap-4 p-4')}>
+      {STOCK.map(({ name, left, of, tone, note }) => (
+        <div key={name} className="text-xs">
+          <div className="mb-1.5 flex items-center gap-2">
+            <span className="text-strong">{name}</span>
+            {note ? (
+              <Badge size="1" color={note[1]} className="ml-auto">
+                {note[0]}
+              </Badge>
+            ) : null}
+            <span className={cn('font-mono text-subtle tabular-nums', !note && 'ml-auto')}>
+              {left} buc.
+            </span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-(--gray-a3)">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${(left / of) * 100}%`, background: tone }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function DiscountMock() {
+  const rows: [string, string, boolean?][] = [
+    ['Subtotal', '82,00'],
+    ['TOAMNA10', '-8,20', true],
+    ['Livrare', '15,00'],
+  ]
+  return (
+    <div className={cn(bentoPanel, 'absolute inset-x-6 top-0 p-4 text-xs')}>
+      <div className="flex items-center gap-2 rounded-(--radius-2) px-3 py-2 shadow-[inset_0_0_0_1px_var(--gray-a6)]">
+        <TicketPercent size={14} strokeWidth={1.5} className="text-subtle" />
+        <span className="font-mono text-strong">TOAMNA10</span>
+        <Badge size="1" color="grass" className="ml-auto">
+          aplicat
+        </Badge>
+      </div>
+      <dl className="m-0 mt-3 flex flex-col gap-1.5">
+        {rows.map(([label, sum, off]) => (
+          <div key={label} className="flex justify-between">
+            <dt className={off ? 'font-mono text-(--grass-11)' : 'text-subtle'}>{label}</dt>
+            <dd className={cn('m-0 tabular-nums', off ? 'text-(--grass-11)' : 'text-strong')}>
+              {sum}
+            </dd>
+          </div>
+        ))}
+        <div className="mt-1 flex justify-between border-t border-frame pt-2 text-sm font-medium text-strong">
+          <dt>Total</dt>
+          <dd className="m-0 tabular-nums">88,80 lei</dd>
+        </div>
+      </dl>
+    </div>
+  )
+}
+
+function ProductFormMock() {
+  const field = 'rounded-(--radius-2) px-3 py-2 text-strong shadow-[inset_0_0_0_1px_var(--gray-a6)]'
+  return (
+    <div
+      className={cn(
+        bentoPanel,
+        'absolute top-0 right-0 left-6 grid grid-cols-[7rem_1fr] gap-4 rounded-r-none p-4 text-xs sm:grid-cols-[9rem_1fr]',
+      )}
+    >
+      <div className="grid aspect-square place-items-center rounded-(--radius-3) bg-(--gray-a2) shadow-[inset_0_0_0_1px_var(--gray-a4)]">
+        <Jar tone="var(--amber-8)" />
+      </div>
+      <div className="flex min-w-0 flex-col gap-2.5">
+        <span className="flex items-center justify-between gap-3">
+          <span className="text-sm font-medium text-strong">Produs</span>
+          <span className="flex items-center gap-2 text-subtle">
+            Publicat
+            <span className="flex h-4 w-7 items-center rounded-full bg-(--accent-9) p-0.5">
+              <span className="ml-auto size-3 rounded-full bg-white" />
+            </span>
+          </span>
+        </span>
+        <span className={field}>Miere de salcâm</span>
+        <span className="grid grid-cols-2 gap-2.5">
+          <span className={field}>32,00 lei</span>
+          <span className={field}>24 buc.</span>
+        </span>
+        <span className="flex flex-wrap gap-1.5">
+          {['250 g', '500 g', '1 kg'].map((v, i) => (
+            <span
+              key={v}
+              className={cn(
+                'rounded-full px-2.5 py-0.5',
+                i === 1
+                  ? 'bg-(--gray-12) text-(--gray-1)'
+                  : 'text-subtle shadow-[inset_0_0_0_1px_var(--gray-a6)]',
+              )}
+            >
+              {v}
+            </span>
+          ))}
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -226,62 +284,65 @@ export default function OnlineShopsPage() {
         ]}
       />
 
-      <PageHero
-        columns="lg:grid-cols-[3fr_2fr]"
+      <CenteredHero
+        badge="Magazine online"
+        icon={ShoppingBag}
         title={
           <>
             Creare magazin online în care comenzile nu se mai copiază de <Highlight>mână</Highlight>
           </>
         }
         text="Construim magazinul și îl legăm de plăți, de curier și de facturare. O comandă plătită ajunge singură la factură, în SPV și la AWB."
-        visual={<OrderTimeline />}
+        secondary={{ label: 'Vezi cum funcționează', href: '#cum-functioneaza' }}
       />
 
-      {/* What the shop is connected to, one cell per connection. */}
-      <Section className="bg-sunken">
-        <Statement
-          lead="Un magazin online bun se vede după ce clientul apasă Plătește."
-          rest="Catalogul e jumătate din muncă. Cealaltă jumătate e drumul comenzii până la client."
-          className="max-w-[44ch]"
+      {/* The shop itself, one order played through. */}
+      <Section id="cum-functioneaza" className="scroll-mt-(--header-height)">
+        <SplitHeader
+          label="Cum funcționează"
+          title="O comandă, de la coș până la curier"
+          text="Clientul vede un magazin simplu și rapid. În spate, plata, factura și livrarea se leagă între ele, în ordinea în care trebuie."
         />
-      </Section>
-      <Section padded={false}>
-        <ol
-          className={cn(
-            gridLinesClass,
-            'm-0 list-none p-0 *:py-(--space-8) sm:grid-cols-2 lg:grid-cols-4',
-          )}
-        >
-          {LINKS.map(({ system, name, text }) => (
-            <li key={name} className="flex flex-col gap-2">
-              <span className="mb-4 font-mono text-xs text-subtle">{system}</span>
-              <Heading as="h3" size={TYPE.body} weight="medium">
-                {name}
-              </Heading>
-              <Text as="p" size={TYPE.body} color="gray">
-                {text}
-              </Text>
-            </li>
-          ))}
-        </ol>
+        <ShopShowcase />
       </Section>
 
-      {/* The owner's side: the orders table, and what is left to do by hand. */}
+      <FeatureCards title="Legat de ce folosești deja" items={CONNECTIONS} className="bg-sunken" />
+
+      {/* The owner's side, as the screens they use. */}
       <Section>
-        <div className="grid items-center gap-12 lg:grid-cols-[4fr_7fr] lg:gap-16">
-          <div className="flex flex-col gap-6">
-            <Statement
-              lead="Tu te ocupi de produse și de clienți."
-              rest="Restul se vede într-un singur tabel: ce s-a plătit, ce s-a facturat și ce a plecat la curier."
-            />
-            <Body>
-              Adaugi produse, schimbi prețuri și pui reduceri dintr-un panou de administrare în
-              română. Când ceva nu merge, o plată eșuată sau un produs fără stoc, vezi direct în
-              comandă ce s-a întâmplat.
-            </Body>
-          </div>
-          <OrdersTable />
-        </div>
+        <SplitHeader
+          label="Administrare"
+          title="Tu te ocupi de produse și de clienți"
+          text="Totul se face dintr-un panou de administrare în română. Când ceva nu merge, o plată eșuată sau un produs fără stoc, vezi direct în comandă ce s-a întâmplat."
+        />
+        <Bento>
+          <BentoCell
+            className="lg:col-span-2"
+            title="Comenzi într-un singur tabel"
+            text="Ce s-a plătit, ce s-a facturat și ce a plecat la curier, fără să deschizi trei programe."
+          >
+            <OrdersMock />
+          </BentoCell>
+          <BentoCell
+            title="Stocul se scade singur"
+            text="Un produs epuizat nu mai poate fi comandat, iar cel pe terminate îl vezi din timp."
+          >
+            <StockMock />
+          </BentoCell>
+          <BentoCell
+            title="Coduri de reducere"
+            text="Le creezi tu, cu procent sau sumă fixă, și le oprești când vrei."
+          >
+            <DiscountMock />
+          </BentoCell>
+          <BentoCell
+            className="lg:col-span-2"
+            title="Produsele le adaugi tu"
+            text="Nume, poze, prețuri și variante. Dacă ai multe produse, le importăm dintr-un fișier Excel."
+          >
+            <ProductFormMock />
+          </BentoCell>
+        </Bento>
       </Section>
 
       {/* An honest answer to "platform or custom", before anyone asks. */}

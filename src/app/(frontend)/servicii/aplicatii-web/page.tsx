@@ -1,30 +1,39 @@
 import React from 'react'
-import { Avatar, Badge, Heading, Text } from '@radix-ui/themes'
+import { Badge } from '@radix-ui/themes'
 import {
+  AppWindow,
   Cable,
-  FileSpreadsheet,
+  Check,
+  Eye,
+  FileCode2,
+  FileText,
   LayoutList,
+  LifeBuoy,
   ListChecks,
-  type LucideIcon,
+  Lock,
   UsersRound,
+  Zap,
 } from 'lucide-react'
 
-import { gridLinesClass, Section, TintCard } from '@/components/site/Frame'
+import { AppShowcase } from '@/components/site/AppShowcase'
+import { Section } from '@/components/site/Frame'
 import { APPS_FAQ } from '@/components/site/faqs'
 import { Highlight } from '@/components/site/Highlight'
 import { JsonLd } from '@/components/site/JsonLd'
 import {
+  Bento,
+  BentoCell,
+  bentoPanel,
   Body,
+  CenteredHero,
   ClosingCta,
   FaqSection,
-  Grain,
+  FeatureCards,
   InlineLink,
-  PageHero,
+  SplitHeader,
   Statement,
   TintedWindow,
-  Window,
 } from '@/components/site/PageParts'
-import { TYPE } from '@/design/type'
 import { buildMeta } from '@/utilities/seo'
 import { breadcrumbSchema, faqSchema, serviceSchema } from '@/utilities/structuredData'
 import { cn } from '@/utilities/ui'
@@ -34,9 +43,11 @@ import { cn } from '@/utilities/ui'
  * comandă" (docs/seo/keyword-map.md). The variants (cost, owning the code,
  * connecting existing software, upkeep) are the questions at the bottom.
  *
- * Most custom apps start as a spreadsheet passed around by email, so that is
- * the opening picture: the file everyone knows, and the app that replaces it.
- * The examples describe kinds of work, not named clients.
+ * Under the title sits an app as a team would use it, "Mobila Nord", a
+ * made-up furniture maker that kept its orders in a spreadsheet, played
+ * through in three steps. The bento shows the parts most such apps grow:
+ * a client portal, roles, connections and a history of changes. The
+ * examples describe kinds of work, not named clients.
  */
 
 const PATH = '/servicii/aplicatii-web'
@@ -44,26 +55,52 @@ const TITLE = 'Aplicații web la comandă pentru firme'
 const DESCRIPTION =
   'CRM-uri, portaluri pentru clienți și instrumente interne construite pe procesele firmei tale, nu invers. Codul e al tău, iar aplicația crește în etape.'
 
-const KINDS: { icon: LucideIcon; title: string; text: string; example: string }[] = [
+const KINDS = [
   {
     icon: LayoutList,
     title: 'Evidențe interne și CRM',
     text: 'Clienți, comenzi, intervenții sau stocuri într-un singur loc, cu drepturi diferite pentru fiecare om din echipă.',
-    example:
-      'o firmă de service care vede fiecare intervenție cu tehnicianul, piesele folosite și factura.',
+    note: 'o firmă de service care vede fiecare intervenție cu tehnicianul, piesele folosite și factura.',
   },
   {
     icon: UsersRound,
     title: 'Portaluri pentru clienți',
     text: 'Locul în care clienții tăi văd comenzile, descarcă documente și trimit cereri, fără telefoane de verificare.',
-    example:
-      'un distribuitor ai cărui clienți văd stocul și prețurile lor și plasează singuri comanda.',
+    note: 'un distribuitor ai cărui clienți văd stocul și prețurile lor și plasează singuri comanda.',
   },
   {
     icon: Cable,
     title: 'Automatizări și legături',
     text: 'Programele pe care le folosiți deja, legate între ele, ca datele să nu mai fie copiate dintr-un loc în altul.',
-    example: 'comenzile din magazinul online trimise direct în programul de contabilitate.',
+    note: 'comenzile din magazinul online trimise direct în programul de contabilitate.',
+  },
+]
+
+const AFTER_HANDOVER = [
+  {
+    icon: Eye,
+    title: 'Un exemplu pe care îl poți vedea',
+    text: (
+      <>
+        <InlineLink href="/produse/crm">CRM-ul și programul de facturare</InlineLink> pe care le
+        oferim sunt o aplicație construită de noi: clienți, proiecte, pontaj, facturi și e-Factura.
+      </>
+    ),
+  },
+  {
+    icon: FileCode2,
+    title: 'Codul e al vostru',
+    text: 'Primiți codul întreg, documentația și accesul la server. Folosim tehnologii stabile și răspândite, ca orice alt programator să poată continua.',
+  },
+  {
+    icon: LifeBuoy,
+    title: 'Rămânem după lansare',
+    text: (
+      <>
+        Actualizări, copii de siguranță și cineva care răspunde când ceva nu merge, prin{' '}
+        <InlineLink href="/servicii/mentenanta">mentenanța lunară</InlineLink>.
+      </>
+    ),
   },
 ]
 
@@ -73,100 +110,174 @@ const STAGES: { name: string; state: string; tone: 'grass' | 'iris' | 'gray' }[]
   { name: 'Legătura cu contabilitatea', state: 'urmează', tone: 'gray' },
 ]
 
-const ORDERS: {
-  client: string
-  what: string
-  who: string
-  state: string
-  tone: 'amber' | 'iris' | 'grass'
-}[] = [
-  { client: 'Hotel Sigma', what: '40 de scaune', who: 'AM', state: 'De aprobat', tone: 'amber' },
-  { client: 'Școala nr. 7', what: 'Bănci, 2 săli', who: 'RI', state: 'În lucru', tone: 'iris' },
-  { client: 'Cafe Doi', what: 'Mese terasă', who: 'AM', state: 'În lucru', tone: 'iris' },
-  { client: 'Biroul Nova', what: 'Recepție', who: 'DC', state: 'Livrată', tone: 'grass' },
-]
-
-/* The spreadsheet behind the app: the cells people highlight to keep track. */
-const SHEET: string[][] = [
-  ['Client', 'Ce', 'Cine', 'Stare'],
-  ['Hotel Sigma', '40 scaune', 'Andrei?', 'DE VERIFICAT'],
-  ['Scoala 7', 'banci', 'Radu', 'lucru'],
-  ['Cafe Doi', 'mese', '', 'vezi mail'],
-  ['Nova', 'receptie', 'Dana', 'gata??'],
-]
-const FLAGGED = new Set(['1-3', '3-3', '4-3', '1-2'])
-
-/**
- * The hero: the spreadsheet a process usually lives in, and in front of it
- * the app that takes its place, with a person and a state on every row.
- */
-function SheetToApp() {
+/** A client following their order, without phoning to ask. */
+function PortalMock() {
+  const stages = ['Primită', 'Aprobată', 'În producție', 'Livrare']
+  const current = 2
   return (
-    <TintCard hue="cyan" className="w-full p-5 sm:p-10">
-      <Grain />
-      <div className="relative">
-        {/* Behind: the file everyone has a different version of. */}
-        <div
-          aria-hidden
-          className="w-[82%] overflow-hidden rounded-(--radius-3) bg-(--color-panel-solid) opacity-80 shadow-[inset_0_0_0_1px_var(--gray-a5)]"
-        >
-          <div className="flex items-center gap-2 border-b border-frame px-3 py-2">
-            <FileSpreadsheet size={14} strokeWidth={1.5} className="text-(--grass-11)" />
-            <span className="truncate text-xs text-subtle">comenzi_final_v3 (2).xlsx</span>
-          </div>
-          <div className="grid grid-cols-[1.3fr_1fr_0.8fr_1fr] text-[11px]">
-            {SHEET.map((row, r) =>
-              row.map((cell, c) => (
-                <span
-                  key={`${r}-${c}`}
-                  className={cn(
-                    'truncate border-r border-b border-(--gray-a4) px-2 py-1 text-subtle',
-                    r === 0 && 'bg-(--gray-a2) font-medium',
-                    FLAGGED.has(`${r}-${c}`) && 'bg-(--amber-a4) text-(--amber-12)',
-                  )}
-                >
-                  {cell || ' '}
-                </span>
-              )),
-            )}
-          </div>
-        </div>
-
-        {/* In front: the same work, as an app. */}
-        <Window
-          icon={ListChecks}
-          title="Comenzi"
-          note="24 deschise"
-          className="relative -mt-10 ml-auto w-[92%]"
-        >
-          <div className="flex gap-2 border-b border-frame px-4 py-2.5">
-            <Badge color="gray" variant="soft">
-              Toate
-            </Badge>
-            <Badge color="amber" variant="soft">
-              De aprobat 3
-            </Badge>
-            <Badge color="iris" variant="soft" className="hidden sm:inline-flex">
-              În lucru 8
-            </Badge>
-          </div>
-          <ul className="m-0 list-none divide-y divide-frame p-0">
-            {ORDERS.map((order) => (
-              <li key={order.client} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                <span className="min-w-0 flex-1 leading-tight">
-                  <span className="block truncate text-strong">{order.client}</span>
-                  <span className="block truncate text-xs text-subtle">{order.what}</span>
-                </span>
-                <Avatar size="1" radius="full" fallback={order.who} color="gray" />
-                <Badge color={order.tone} className="w-[84px] justify-center">
-                  {order.state}
-                </Badge>
-              </li>
-            ))}
-          </ul>
-        </Window>
+    <div className={cn(bentoPanel, 'absolute top-0 right-0 left-6 rounded-r-none p-5 text-xs')}>
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-sm font-medium text-strong">40 de scaune, Hotel Sigma</span>
+        <span className="hidden text-subtle sm:inline">livrare estimată 18 nov.</span>
       </div>
-    </TintCard>
+      <ol className="m-0 mt-5 grid list-none grid-cols-4 gap-2 p-0">
+        {stages.map((stage, i) => (
+          <li key={stage} className="flex flex-col gap-2">
+            <span
+              className={cn(
+                'h-1 rounded-full',
+                i < current && 'bg-(--accent-9)',
+                i === current && 'bg-(--accent-a6)',
+                i > current && 'bg-(--gray-a4)',
+              )}
+            />
+            <span className={i <= current ? 'text-strong' : 'text-subtle'}>{stage}</span>
+          </li>
+        ))}
+      </ol>
+      <ul className="m-0 mt-5 list-none divide-y divide-frame border-t border-frame p-0">
+        {['Oferta acceptată.pdf', 'Proforma MN-0398.pdf'].map((doc) => (
+          <li key={doc} className="flex items-center gap-2 py-2.5">
+            <FileText size={14} strokeWidth={1.5} className="text-subtle" />
+            <span className="text-strong">{doc}</span>
+            <span className="ml-auto text-(--accent-11)">Descarcă</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/** Who may open what, as the app enforces it. */
+function RolesMock() {
+  const cols = ['Comenzi', 'Prețuri', 'Facturi']
+  const rows: [string, boolean[]][] = [
+    ['Vânzări', [true, true, false]],
+    ['Atelier', [true, false, false]],
+    ['Contabilitate', [true, true, true]],
+  ]
+  return (
+    <div className={cn(bentoPanel, 'absolute inset-x-6 top-0 text-xs')}>
+      <div className="grid grid-cols-[1fr_repeat(3,3.75rem)] border-b border-frame px-4 py-2.5 text-subtle">
+        <span />
+        {cols.map((c) => (
+          <span key={c} className="text-center">
+            {c}
+          </span>
+        ))}
+      </div>
+      {rows.map(([role, can]) => (
+        <div
+          key={role}
+          className="grid grid-cols-[1fr_repeat(3,3.75rem)] items-center border-b border-frame px-4 py-2.5 last:border-b-0"
+        >
+          <span className="text-strong">{role}</span>
+          {can.map((ok, i) => (
+            <span key={i} className="grid place-items-center">
+              {ok ? (
+                <Check size={14} strokeWidth={2} className="text-(--accent-11)" />
+              ) : (
+                <Lock size={12} strokeWidth={1.75} className="text-(--gray-8)" />
+              )}
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** The app in the middle, wired to the programs around it. */
+function ConnectionsMock() {
+  const nodes = [
+    { label: 'e-Factura', x: 20, y: 18 },
+    { label: 'Contabilitate', x: 80, y: 18 },
+    { label: 'Email', x: 20, y: 82 },
+    { label: 'Magazin', x: 80, y: 82 },
+  ]
+  return (
+    <div className="absolute inset-x-4 top-0 bottom-4">
+      <svg className="absolute inset-0 size-full" aria-hidden>
+        {nodes.map((n) => (
+          <line
+            key={n.label}
+            x1="50%"
+            y1="50%"
+            x2={`${n.x}%`}
+            y2={`${n.y}%`}
+            stroke="var(--gray-a7)"
+            strokeWidth="1"
+            strokeDasharray="4 4"
+            className="flow-line"
+          />
+        ))}
+      </svg>
+      {nodes.map((n) => (
+        <span
+          key={n.label}
+          className={cn(
+            bentoPanel,
+            'absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs whitespace-nowrap text-strong',
+          )}
+          style={{ left: `${n.x}%`, top: `${n.y}%` }}
+        >
+          {n.label}
+        </span>
+      ))}
+      <span className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-(--radius-3) bg-(--gray-12) px-3.5 py-2 text-xs font-medium whitespace-nowrap text-(--gray-1) shadow-[0_12px_30px_-12px_rgb(0_0_0/0.5)]">
+        <span className="size-2.5 rounded-[3px] bg-(--accent-9)" />
+        Aplicația voastră
+      </span>
+    </div>
+  )
+}
+
+/** Who changed what, and when: the record a spreadsheet never keeps. */
+function HistoryMock() {
+  const entries: { who: string; app?: boolean; what: React.ReactNode; when: string }[] = [
+    {
+      who: 'DC',
+      what: (
+        <>
+          Dana a mutat termenul pentru Cafe Doi:{' '}
+          <span className="text-subtle line-through">12 nov.</span> 15 nov.
+        </>
+      ),
+      when: 'azi, 11:20',
+    },
+    { who: 'RI', what: 'Radu a trecut Școala nr. 7 în producție', when: 'ieri, 16:05' },
+    {
+      who: '',
+      app: true,
+      what: 'Aplicația a emis factura MN-0412 pentru Biroul Nova',
+      when: 'ieri, 09:12',
+    },
+  ]
+  return (
+    <ol
+      className={cn(
+        bentoPanel,
+        'absolute top-0 right-0 left-6 m-0 list-none rounded-r-none p-0 text-xs',
+      )}
+    >
+      {entries.map(({ who, app, what, when }) => (
+        <li
+          key={when}
+          className="flex items-center gap-3 border-b border-frame px-4 py-3 last:border-b-0"
+        >
+          <span
+            className={cn(
+              'grid size-6 shrink-0 place-items-center rounded-full text-[9px] font-medium',
+              app ? 'bg-(--accent-a3) text-(--accent-11)' : 'bg-(--gray-a3) text-strong',
+            )}
+          >
+            {app ? <Zap size={11} strokeWidth={2} /> : who}
+          </span>
+          <span className="min-w-0 flex-1 text-strong">{what}</span>
+          <span className="hidden shrink-0 text-subtle sm:inline">{when}</span>
+        </li>
+      ))}
+    </ol>
   )
 }
 
@@ -203,47 +314,69 @@ export default function WebAppsPage() {
         ]}
       />
 
-      <PageHero
+      <CenteredHero
+        badge="Aplicații web"
+        icon={AppWindow}
         title={
           <>
             Aplicații web la comandă, construite pe <Highlight>procesele</Highlight> firmei tale
           </>
         }
         text="Construim CRM-uri, portaluri pentru clienți și instrumente interne care înlocuiesc tabelele trimise pe email și pașii pe care cineva îi face de mână în fiecare zi."
-        visual={<SheetToApp />}
+        secondary={{ label: 'Vezi un exemplu', href: '#exemplu' }}
       />
 
-      {/* The three kinds of app, each with an example of the problem it removes. */}
-      <Section className="bg-sunken">
-        <Statement
-          lead="Trei feluri de aplicații pe care le construim des."
-          rest="Toate pornesc de la un tabel, un email sau un pas pe care cineva îl repetă zilnic."
-          className="max-w-[44ch]"
+      {/* An app as a team would use it, played through in three steps. */}
+      <Section id="exemplu" className="scroll-mt-(--header-height)">
+        <SplitHeader
+          label="Un exemplu"
+          title="Comenzile unui atelier de mobilă, scoase din Excel"
+          text="Un caz inventat, dar tipic: o firmă care ținea comenzile într-un tabel trimis pe email și afla stadiul lor la telefon."
         />
+        <AppShowcase />
       </Section>
-      <Section padded={false}>
-        <ul className={cn(gridLinesClass, 'm-0 list-none p-0 *:py-(--space-8) md:grid-cols-3')}>
-          {KINDS.map(({ icon: Icon, title, text, example }) => (
-            <li key={title} className="flex flex-col gap-2">
-              <Icon size={24} strokeWidth={1.25} aria-hidden className="mb-4 text-(--accent-11)" />
-              <Heading as="h3" size={TYPE.body} weight="medium">
-                {title}
-              </Heading>
-              <Text as="p" size={TYPE.body} color="gray">
-                {text}
-              </Text>
-              <Text
-                as="p"
-                size={TYPE.meta}
-                color="gray"
-                mt="4"
-                className="border-l-2 border-(--accent-a6) pl-3"
-              >
-                De exemplu, {example}
-              </Text>
-            </li>
-          ))}
-        </ul>
+
+      <FeatureCards
+        title="Trei feluri de aplicații pe care le construim des"
+        items={KINDS}
+        className="bg-sunken"
+      />
+
+      {/* The parts most custom apps grow, as the screens themselves. */}
+      <Section>
+        <SplitHeader
+          label="Ce primești"
+          title="Făcută pentru oamenii care o folosesc zilnic"
+          text="Fiecare aplicație e diferită, dar câteva piese apar în aproape toate. Le construim pe măsura firmei, nu le luăm dintr-un șablon."
+        />
+        <Bento>
+          <BentoCell
+            className="lg:col-span-2"
+            title="Un portal pentru clienții tăi"
+            text="Clientul își vede comanda, termenul și documentele, fără să sune ca să întrebe."
+          >
+            <PortalMock />
+          </BentoCell>
+          <BentoCell
+            title="Drepturi pe roluri"
+            text="Fiecare om vede și modifică doar ce ține de munca lui."
+          >
+            <RolesMock />
+          </BentoCell>
+          <BentoCell
+            title="Legături cu ce folosiți deja"
+            text="Datele circulă singure între aplicație și celelalte programe."
+          >
+            <ConnectionsMock />
+          </BentoCell>
+          <BentoCell
+            className="lg:col-span-2"
+            title="Istoric pentru fiecare schimbare"
+            text="Cine a schimbat ce și când, ca nimic să nu se mai piardă între două versiuni de fișier."
+          >
+            <HistoryMock />
+          </BentoCell>
+        </Bento>
       </Section>
 
       {/* How the work is cut up: small stages, each one used before the next. */}
@@ -264,33 +397,7 @@ export default function WebAppsPage() {
         </div>
       </Section>
 
-      {/* Three plain facts that decide whether a custom app is a safe bet. */}
-      <Section padded={false}>
-        <div className={cn(gridLinesClass, 'grid-cols-1 *:py-(--section-gap) md:grid-cols-3')}>
-          <div className="flex flex-col gap-4">
-            <Statement as="h2" lead="Un exemplu pe care îl poți vedea." />
-            <Body>
-              <InlineLink href="/produse/crm">CRM-ul și programul de facturare</InlineLink> pe care
-              le oferim sunt o aplicație construită de noi: clienți, proiecte, pontaj, facturi și
-              e-Factura, legate între ele.
-            </Body>
-          </div>
-          <div className="flex flex-col gap-4">
-            <Statement as="h2" lead="Codul e al vostru." />
-            <Body>
-              Primiți codul întreg, documentația și accesul la server. Folosim tehnologii stabile și
-              răspândite, ca orice alt programator să poată continua.
-            </Body>
-          </div>
-          <div className="flex flex-col gap-4">
-            <Statement as="h2" lead="Rămânem după lansare." />
-            <Body>
-              Actualizări, copii de siguranță și cineva care răspunde când ceva nu merge, prin{' '}
-              <InlineLink href="/servicii/mentenanta">mentenanța lunară</InlineLink>.
-            </Body>
-          </div>
-        </div>
-      </Section>
+      <FeatureCards title="Ce rămâne la voi după predare" items={AFTER_HANDOVER} />
 
       <FaqSection topic="aplicațiile web" items={APPS_FAQ} className="bg-sunken" />
 

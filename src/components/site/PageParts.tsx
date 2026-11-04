@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Heading, Text } from '@radix-ui/themes'
+import { Badge, Button, Flex, Heading, Text } from '@radix-ui/themes'
 import type { LucideIcon } from 'lucide-react'
 
 import { TYPE } from '@/design/type'
@@ -271,3 +271,194 @@ export function ClosingCta({
     </Section>
   )
 }
+
+/**
+ * A centred opening for a page: a small badge naming the service, the title,
+ * one line under it, and the two actions, the quote and a jump to the
+ * showcase below.
+ */
+export function CenteredHero({
+  badge,
+  icon: Icon,
+  title,
+  text,
+  secondary,
+}: {
+  badge: string
+  icon: LucideIcon
+  title: React.ReactNode
+  text: string
+  secondary?: { label: string; href: string }
+}) {
+  return (
+    <Section>
+      <Flex direction="column" align="center" gap="5" className="pt-4 text-center md:pt-8">
+        <Badge size="2" variant="surface" color="gray" radius="full">
+          <Icon size={14} strokeWidth={1.75} className="text-(--accent-11)" />
+          {badge}
+        </Badge>
+        <Heading as="h1" size={TYPE.display} className="max-w-4xl text-balance">
+          {title}
+        </Heading>
+        <Text as="p" size={TYPE.lead} color="gray" className="max-w-(--reading-width) text-balance">
+          {text}
+        </Text>
+        <Flex gap="3" wrap="wrap" justify="center" mt="2">
+          <QuoteButton size="3" />
+          {secondary ? (
+            <Button asChild size="3" variant="soft" color="gray">
+              <Link href={secondary.href}>{secondary.label}</Link>
+            </Button>
+          ) : null}
+        </Flex>
+      </Flex>
+    </Section>
+  )
+}
+
+/* A heading one step below the page title, for the opening of a section. */
+const SECTION_TITLE = { initial: '7', md: '8' } as const
+
+/**
+ * A section's opening, split in two: a small label and the title on the
+ * left, the explanation on the right, level with the title's last line.
+ */
+export function SplitHeader({
+  label,
+  title,
+  text,
+}: {
+  label: string
+  title: React.ReactNode
+  text: string
+}) {
+  return (
+    <div className="mb-12 grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16">
+      <div>
+        <Text as="p" size={TYPE.meta} color="gray" mb="3">
+          {label}
+        </Text>
+        <Heading as="h2" size={SECTION_TITLE} className="max-w-[18ch] text-balance">
+          {title}
+        </Heading>
+      </div>
+      <Text as="p" size={TYPE.body} color="gray" className="max-w-[46ch] text-pretty">
+        {text}
+      </Text>
+    </div>
+  )
+}
+
+export type FeatureCard = {
+  icon: LucideIcon
+  title: string
+  text: React.ReactNode
+  note?: string
+}
+
+/**
+ * A title held on the left and a row of outlined cards beside it, each with
+ * a small icon, a name and a few lines.
+ */
+export function FeatureCards({
+  title,
+  items,
+  className,
+}: {
+  title: React.ReactNode
+  items: FeatureCard[]
+  className?: string
+}) {
+  return (
+    <Section className={className}>
+      <div className="grid gap-10 lg:grid-cols-[1fr_3fr] lg:gap-16">
+        <Heading as="h2" size={SECTION_TITLE} className="max-w-[14ch] text-balance">
+          {title}
+        </Heading>
+        <ul
+          className={cn(
+            'm-0 grid list-none gap-4 p-0 sm:grid-cols-2',
+            items.length === 3 ? 'xl:grid-cols-3' : 'xl:grid-cols-2',
+          )}
+        >
+          {items.map(({ icon: Icon, title: name, text, note }) => (
+            <li
+              key={name}
+              className="flex flex-col gap-2 rounded-(--radius-3) bg-(--color-panel-solid) p-6 shadow-[inset_0_0_0_1px_var(--gray-a5)]"
+            >
+              <span className="flex items-center gap-2.5">
+                <Icon size={16} strokeWidth={1.75} aria-hidden className="shrink-0 text-strong" />
+                <Heading as="h3" size="3" weight="medium">
+                  {name}
+                </Heading>
+              </span>
+              <Text as="p" size={TYPE.meta} color="gray" className="text-pretty">
+                {text}
+              </Text>
+              {note ? (
+                <Text as="p" size={TYPE.meta} color="gray" className="mt-auto pt-4 text-pretty">
+                  <span className="text-strong">De exemplu,</span> {note}
+                </Text>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
+  )
+}
+
+/* A faint grid of dots behind a mockup, fading out towards the bottom. */
+const DOTS = {
+  backgroundImage: 'radial-gradient(var(--gray-a6) 1px, transparent 1px)',
+  backgroundSize: '14px 14px',
+  maskImage: 'linear-gradient(to bottom, #000 30%, transparent 100%)',
+  WebkitMaskImage: 'linear-gradient(to bottom, #000 30%, transparent 100%)',
+}
+
+/**
+ * One cell of a bento grid: the name and a line at the top, a mockup of the
+ * thing under them on a field of dots, cropped by the cell's edge.
+ */
+export function BentoCell({
+  title,
+  text,
+  className,
+  children,
+}: {
+  title: string
+  text: string
+  className?: string
+  children: React.ReactNode
+}) {
+  return (
+    <li
+      className={cn(
+        'relative isolate flex flex-col overflow-hidden rounded-(--radius-4) bg-(--color-panel-solid) shadow-[inset_0_0_0_1px_var(--gray-a5)]',
+        className,
+      )}
+    >
+      <div className="p-6 pb-0">
+        <Heading as="h3" size="3" weight="medium">
+          {title}
+        </Heading>
+        <Text as="p" size={TYPE.meta} color="gray" mt="1" className="max-w-[48ch] text-pretty">
+          {text}
+        </Text>
+      </div>
+      <div aria-hidden className="relative mt-6 flex min-h-[230px] flex-1 select-none">
+        <span className="absolute inset-0 -z-10" style={DOTS} />
+        {children}
+      </div>
+    </li>
+  )
+}
+
+/** The grid the bento cells sit in: three columns on wide screens. */
+export function Bento({ children }: { children: React.ReactNode }) {
+  return <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2 lg:grid-cols-3">{children}</ul>
+}
+
+/** A small panel inside a bento cell, the piece of the app the cell is about. */
+export const bentoPanel =
+  'rounded-(--radius-3) bg-(--color-panel-solid) shadow-[0_18px_40px_-24px_rgb(0_0_0/0.4),inset_0_0_0_1px_var(--gray-a5)]'
