@@ -18,7 +18,7 @@ set -euo pipefail
 RELEASE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_DIR="$(cd "$RELEASE/../.." && pwd)"
 SHARED="$APP_DIR/shared"
-KEEP_RELEASES=3
+KEEP_RELEASES=2
 KEEP_BACKUPS=10
 
 cd "$RELEASE"
