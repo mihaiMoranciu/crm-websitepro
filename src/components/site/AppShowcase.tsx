@@ -2,132 +2,287 @@
 
 import React from 'react'
 import {
-  BarChart3,
-  Check,
-  Factory,
-  ListChecks,
-  Lock,
-  ReceiptText,
-  Search,
-  UserCog,
-  UsersRound,
-  Zap,
-} from 'lucide-react'
+  BarChartIcon,
+  CheckIcon,
+  ClockIcon,
+  EnvelopeClosedIcon,
+  EyeOpenIcon,
+  LayersIcon,
+  LightningBoltIcon,
+  ListBulletIcon,
+  LockClosedIcon,
+  PersonIcon,
+  PlusIcon,
+  ReaderIcon,
+} from '@radix-ui/react-icons'
 
 import { cn } from '@/utilities/ui'
 
-import { marked, MockFrame, ShowcaseLayout, type Step, useSteps } from './Showcase'
+import {
+  AppBar,
+  AppBody,
+  Fade,
+  floating,
+  Avatar,
+  IconTile,
+  type Icon,
+  RUN_ON,
+  ShowcaseLayout,
+  Shot,
+  SideNav,
+  type Step,
+  Timeline,
+  useSteps,
+} from './Showcase'
 
 /*
- * The web app showcase: a generic company, "Firma ta", whose orders used to
- * live in a spreadsheet. Clients are named only by kind and town, so no
- * made-up brand shows up anywhere. Three things a custom app changes: everything
- * in one place, each person seeing only their part, and the repeated steps
- * done by the app. Sample data throughout.
+ * The web app showcase: a generic company, "Firma ta", that makes things to
+ * order. Clients are named only by kind and town, so no made-up brand shows
+ * up anywhere. Three things a custom app changes: every order on one board,
+ * each person seeing only their part, and the repeated steps done by the app.
+ * Sample data throughout.
  */
 
 const STEPS: Step[] = [
   {
-    icon: ListChecks,
+    icon: ListBulletIcon,
     title: 'Toate comenzile într-un singur loc.',
     text: 'Cine lucrează la ce, până când și în ce stadiu e, fără să întrebi pe nimeni.',
   },
   {
-    icon: UserCog,
+    icon: EyeOpenIcon,
     title: 'Fiecare vede ce îl privește.',
     text: 'Producția vede ce are de lucrat, contabilitatea vede facturile, iar prețurile rămân la cine trebuie.',
   },
   {
-    icon: Zap,
+    icon: LightningBoltIcon,
     title: 'Pașii repetați se fac singuri.',
     text: 'O comandă livrată emite factura și anunță clientul, fără ca cineva să își amintească.',
   },
 ]
 
-const NAV = [
-  { icon: ListChecks, label: 'Comenzi', open: true },
-  { icon: Factory, label: 'Producție', open: true },
-  { icon: UsersRound, label: 'Clienți', open: false },
-  { icon: ReceiptText, label: 'Facturi', open: false },
-  { icon: BarChart3, label: 'Rapoarte', open: false },
+const NAV: { icon: Icon; label: string }[] = [
+  { icon: ListBulletIcon, label: 'Comenzi' },
+  { icon: LayersIcon, label: 'Producție' },
+  { icon: PersonIcon, label: 'Clienți' },
+  { icon: ReaderIcon, label: 'Facturi' },
+  { icon: BarChartIcon, label: 'Rapoarte' },
 ]
 
-type Tone = 'amber' | 'iris' | 'gray' | 'grass'
+const PAGE_OF_STEP = ['Comenzi', 'Producție', 'Comenzi']
 
-const TONES: Record<Tone, string> = {
-  amber: 'bg-(--amber-a3) text-(--amber-11)',
-  iris: 'bg-(--iris-a3) text-(--iris-11)',
-  gray: 'bg-(--gray-a3) text-(--gray-11)',
-  grass: 'bg-(--grass-a3) text-(--grass-11)',
+/* What someone from production can open; the rest shows a padlock. */
+const HIDDEN_FROM_PRODUCTION = ['Clienți', 'Facturi', 'Rapoarte']
+
+/* ---------- 1. The board ---------- */
+
+type Card = { client: string; no: string; due: string; who: string }
+
+const COLUMNS: { title: string; dot: string; cards: Card[] }[] = [
+  {
+    title: 'De aprobat',
+    dot: 'bg-(--amber-9)',
+    cards: [
+      { client: 'Hotel, Sibiu', no: '#2040', due: '18 nov', who: 'AM' },
+      { client: 'Pensiune, Brașov', no: '#2037', due: '2 dec', who: 'RI' },
+    ],
+  },
+  {
+    title: 'În producție',
+    dot: 'bg-(--blue-9)',
+    cards: [
+      { client: 'Școală, Cluj', no: '#2039', due: '22 nov', who: 'DC' },
+      { client: 'Cafenea, Iași', no: '#2038', due: '15 nov', who: 'AM' },
+    ],
+  },
+  {
+    title: 'Livrare',
+    dot: 'bg-(--grass-9)',
+    cards: [
+      { client: 'Birou, București', no: '#2041', due: '10 nov', who: 'DC' },
+      { client: 'Magazin, Arad', no: '#2036', due: '8 nov', who: 'RI' },
+    ],
+  },
+]
+
+function OrderCard({ card, className }: { card: Card; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'rounded-(--radius-3) bg-(--color-panel-solid) p-3 shadow-[inset_0_0_0_1px_var(--gray-a4)]',
+        className,
+      )}
+    >
+      <span className="block truncate text-[13px] text-strong">{card.client}</span>
+      <span className="mt-2.5 flex items-center gap-2 text-[11px] text-subtle">
+        <span className="hidden tabular-nums sm:inline">{card.no}</span>
+        <span className="flex items-center gap-1 whitespace-nowrap">
+          <ClockIcon className="size-3" />
+          {card.due}
+        </span>
+        <Avatar initials={card.who} className="ml-auto size-5 text-[8px]" />
+      </span>
+    </div>
+  )
 }
 
-const ROWS: {
-  client: string
-  what: string
-  due: string
-  value: string
-  who: string
-  state: string
-  tone: Tone
-}[] = [
-  {
-    client: 'Birou, București',
-    what: '#2041',
-    due: '10 nov.',
-    value: '7.300',
-    who: 'DC',
-    state: 'Livrare',
-    tone: 'gray',
-  },
-  {
-    client: 'Hotel, Sibiu',
-    what: '#2040',
-    due: '18 nov.',
-    value: '12.400',
-    who: 'AM',
-    state: 'De aprobat',
-    tone: 'amber',
-  },
-  {
-    client: 'Școală, Cluj',
-    what: '#2039',
-    due: '22 nov.',
-    value: '8.900',
-    who: 'RI',
-    state: 'În producție',
-    tone: 'iris',
-  },
-  {
-    client: 'Cafenea, Iași',
-    what: '#2038',
-    due: '15 nov.',
-    value: '5.600',
-    who: 'AM',
-    state: 'În producție',
-    tone: 'iris',
-  },
-  {
-    client: 'Pensiune, Brașov',
-    what: '#2037',
-    due: '2 dec.',
-    value: '14.200',
-    who: 'RI',
-    state: 'Ofertă trimisă',
-    tone: 'gray',
-  },
+function BoardPage() {
+  return (
+    <div className="p-5 sm:p-7">
+      <div className="flex items-center">
+        <span className="text-[15px] font-medium text-strong">Comenzi</span>
+        <span className="ml-2 text-xs text-subtle">24 active</span>
+        <span className="ml-auto flex items-center gap-1.5 rounded-(--radius-2) bg-(--gray-12) px-2.5 py-1 text-xs font-medium text-(--gray-1)">
+          <PlusIcon className="size-3" />
+          Comandă
+        </span>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {COLUMNS.map((column, c) => (
+          <div
+            key={column.title}
+            className={cn(
+              'rounded-(--radius-4) bg-(--gray-a2) p-2 shadow-[inset_0_0_0_1px_var(--gray-a3)]',
+              c === 2 && 'hidden sm:block',
+            )}
+          >
+            <span className="flex items-center gap-2 px-1.5 pt-1 pb-2.5 text-xs text-subtle">
+              <span className={cn('size-1.5 rounded-full', column.dot)} />
+              {column.title}
+            </span>
+            <div className="flex flex-col gap-2">
+              {column.cards.map((card, i) =>
+                // One card is picked up mid-move: the thing on this screen that pops.
+                c === 1 && i === 0 ? (
+                  <OrderCard
+                    key={card.no}
+                    card={card}
+                    className="relative z-10 -translate-y-1 rotate-[2.5deg] shadow-[0_18px_36px_-14px_var(--gray-a10),0_0_0_1px_var(--accent-a7)]"
+                  />
+                ) : (
+                  <OrderCard key={card.no} card={card} className={RUN_ON[i + 1]} />
+                ),
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- 2. Seen by production ---------- */
+
+const TASKS: [string, string][] = [
+  ['Școală, Cluj', '22 nov'],
+  ['Cafenea, Iași', '15 nov'],
+  ['Hotel, Sibiu', '18 nov'],
+  ['Pensiune, Brașov', '2 dec'],
 ]
 
-/* Whose view the restricted step shows: someone from production. */
-const WORKSHOP = 'AM'
+function ProductionPage() {
+  return (
+    <div className="p-5 sm:p-7">
+      <span className="text-[15px] font-medium text-strong">De lucrat</span>
+      <div className="mt-5 grid grid-cols-[1fr_auto_auto] text-[11px] text-subtle">
+        <span className="pb-2">Comandă</span>
+        <span className="pb-2 pl-6">Termen</span>
+        <span className="pb-2 pl-6">Preț</span>
+        {TASKS.map(([client, due], i) => (
+          <React.Fragment key={client}>
+            <span
+              className={cn(
+                'flex items-center gap-3 border-t border-frame py-3 text-[13px] text-strong',
+                RUN_ON[i],
+              )}
+            >
+              <span className="size-3.5 shrink-0 rounded-full shadow-[inset_0_0_0_1.5px_var(--gray-a7)]" />
+              {client}
+            </span>
+            <span
+              className={cn('flex items-center border-t border-frame py-3 pl-6 text-xs', RUN_ON[i])}
+            >
+              {due}
+            </span>
+            <span className={cn('flex items-center border-t border-frame py-3 pl-6', RUN_ON[i])}>
+              <LockClosedIcon className="size-3" />
+            </span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-/* Columns of the order table, the same template for the header and the rows. */
-const COLS =
-  'grid grid-cols-[1fr_auto] items-center gap-3 sm:grid-cols-[1.4fr_4rem_5rem_1.75rem_6.5rem] lg:grid-cols-[1.4fr_3.5rem_4rem_5rem_1.75rem_6.5rem]'
+/** Whose eyes the screen is seen through. */
+function ViewingAs() {
+  return (
+    <div
+      className={cn(
+        'absolute top-14 right-3 flex items-center gap-3 py-2.5 pr-4 pl-2.5 sm:-right-6',
+        floating,
+      )}
+    >
+      <IconTile className="size-8">
+        <EyeOpenIcon />
+      </IconTile>
+      <span className="leading-tight">
+        <span className="block text-[13px] font-medium text-strong">Cont: Producție</span>
+        <span className="block text-[11px] text-subtle">vede 2 din 5 secțiuni</span>
+      </span>
+    </div>
+  )
+}
+
+/* ---------- 3. Done on its own ---------- */
+
+const HISTORY = [
+  { icon: CheckIcon, text: 'Comanda a fost livrată', when: '14:02' },
+  { icon: ReaderIcon, text: 'Factura FT-0412 a fost emisă', when: '14:02' },
+  { icon: EnvelopeClosedIcon, text: 'Clientul a primit factura pe email', when: '14:03' },
+  { icon: ClockIcon, text: 'Plata e urmărită până pe 24 nov', when: '' },
+]
+
+function OrderPage() {
+  return (
+    <div className="p-5 sm:p-7">
+      <span className="block text-[15px] font-medium text-strong">Comanda #2041</span>
+      <span className="mt-0.5 flex items-center gap-2 text-xs text-subtle">
+        Birou, București
+        <span className="size-1.5 rounded-full bg-(--grass-9)" />
+        Livrată
+      </span>
+      <div className="mt-7">
+        <Timeline items={HISTORY} />
+      </div>
+    </div>
+  )
+}
+
+function AutomaticNote() {
+  return (
+    <div
+      className={cn(
+        'absolute top-14 right-3 flex items-center gap-3 py-2.5 pr-4 pl-2.5 sm:-right-6',
+        floating,
+      )}
+    >
+      <IconTile className="size-8">
+        <LightningBoltIcon />
+      </IconTile>
+      <span className="leading-tight">
+        <span className="block text-[13px] font-medium text-strong">Făcut automat</span>
+        <span className="block text-[11px] text-subtle">la livrarea comenzii</span>
+      </span>
+    </div>
+  )
+}
 
 export function AppShowcase() {
   const { ref, active, select } = useSteps(STEPS.length)
+  const page = PAGE_OF_STEP[active]
   const restricted = active === 1
-  const automated = active === 2
 
   return (
     <ShowcaseLayout
@@ -137,155 +292,35 @@ export function AppShowcase() {
       active={active}
       onSelect={select}
     >
-      <MockFrame className="grid gap-2.5 md:grid-cols-[150px_1fr] sm:gap-3">
-        {/* The sidebar: what this person can open. */}
-        <div
-          className={cn(
-            'hidden flex-col gap-0.5 rounded-(--radius-3) bg-(--gray-a2) p-2.5 shadow-[inset_0_0_0_1px_var(--gray-a3)] md:flex',
-            marked(restricted),
-          )}
+      <Shot
+        overlays={
+          <>
+            <Fade on={active === 1} className="pointer-events-none">
+              <ViewingAs />
+            </Fade>
+            <Fade on={active === 2} className="pointer-events-none">
+              <AutomaticNote />
+            </Fade>
+          </>
+        }
+      >
+        <AppBar page={page} me={restricted ? 'PR' : 'AD'} />
+        <AppBody
+          nav={
+            <SideNav items={NAV} page={page} locked={restricted ? HIDDEN_FROM_PRODUCTION : []} />
+          }
         >
-          <span className="mb-3 flex items-center gap-2 px-2 pt-1 text-sm font-semibold tracking-tight text-strong">
-            <span className="size-3 rounded-[3px] bg-(--accent-9)" />
-            Firma ta
-          </span>
-          {NAV.map(({ icon: Icon, label, open }, i) => (
-            <span
-              key={label}
-              className={cn(
-                'flex items-center gap-2 rounded-(--radius-2) px-2 py-1.5 text-xs transition-opacity duration-500',
-                i === 0 ? 'bg-(--color-panel-solid) text-strong shadow-sm' : 'text-subtle',
-                restricted && !open && 'opacity-40',
-              )}
-            >
-              <Icon size={13} strokeWidth={1.75} />
-              {label}
-              {restricted && !open ? (
-                <Lock size={11} strokeWidth={1.75} className="ml-auto" />
-              ) : null}
-            </span>
-          ))}
-        </div>
-
-        {/* The main view. */}
-        <div className="min-w-0">
-          <div className="flex items-center gap-3 px-1 pt-1 pb-3">
-            <span className="text-sm font-medium text-strong">Comenzi</span>
-            <span className="hidden items-center gap-2 rounded-(--radius-2) px-2.5 py-1 text-xs text-subtle shadow-[inset_0_0_0_1px_var(--gray-a5)] sm:flex">
-              <Search size={12} strokeWidth={1.75} />
-              Caută client sau comandă
-            </span>
-            <span className="ml-auto flex items-center gap-2">
-              <span
-                className={cn(
-                  'rounded-full bg-(--accent-a3) px-2.5 py-0.5 text-[11px] font-medium text-(--accent-11) transition-opacity duration-300',
-                  restricted ? 'opacity-100' : 'opacity-0',
-                )}
-              >
-                Vezi ca: producție
-              </span>
-              <span className="grid size-6 place-items-center rounded-full bg-(--gray-a4) text-[10px] font-medium text-strong">
-                {restricted ? 'AM' : 'DC'}
-              </span>
-            </span>
-          </div>
-
-          <div className="mb-3 flex gap-1.5 px-1 text-[11px]">
-            <span className="rounded-full bg-(--gray-a3) px-2.5 py-0.5 text-strong">Toate 24</span>
-            <span className="rounded-full px-2.5 py-0.5 text-subtle shadow-[inset_0_0_0_1px_var(--gray-a5)]">
-              De aprobat 3
-            </span>
-            <span className="rounded-full px-2.5 py-0.5 text-subtle shadow-[inset_0_0_0_1px_var(--gray-a5)]">
-              În producție 8
-            </span>
-          </div>
-
-          <div
-            className={cn(
-              'overflow-hidden rounded-(--radius-3) shadow-[inset_0_0_0_1px_var(--gray-a4)]',
-              marked(active === 0),
-            )}
-          >
-            <div
-              className={cn(
-                COLS,
-                'border-b border-frame bg-(--gray-a2) px-3 py-2 text-[11px] text-subtle',
-              )}
-            >
-              <span>Client</span>
-              <span className="hidden lg:block">Nr.</span>
-              <span className="hidden sm:block">Termen</span>
-              <span className="hidden text-right sm:block">Lei</span>
-              <span className="hidden sm:block" />
-              <span>Stare</span>
-            </div>
-            {ROWS.map((row) => {
-              const mine = row.who === WORKSHOP
-              const done = automated && row.what === '#2041'
-              return (
-                <div
-                  key={row.client}
-                  className={cn(
-                    COLS,
-                    'border-b border-frame px-3 py-2.5 text-xs transition-[opacity,background-color] duration-500 last:border-b-0',
-                    restricted && !mine && 'opacity-25',
-                    done && 'bg-(--grass-a2)',
-                  )}
-                >
-                  <span className="truncate text-strong">{row.client}</span>
-                  <span className="hidden text-subtle tabular-nums lg:block">{row.what}</span>
-                  <span className="hidden text-subtle sm:block">{row.due}</span>
-                  <span className="hidden justify-end text-strong tabular-nums sm:flex">
-                    {restricted ? (
-                      <Lock size={11} strokeWidth={1.75} className="text-subtle" />
-                    ) : (
-                      row.value
-                    )}
-                  </span>
-                  <span className="hidden size-6 place-items-center rounded-full bg-(--gray-a3) text-[9px] font-medium text-strong sm:grid">
-                    {row.who}
-                  </span>
-                  <span
-                    className={cn(
-                      'rounded-(--radius-1) px-1.5 py-0.5 text-center text-[11px] font-medium transition-colors duration-500',
-                      TONES[done ? 'grass' : row.tone],
-                    )}
-                  >
-                    {done ? 'Livrată' : row.state}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Step 3: the app reporting what it did on its own. */}
-        <div
-          className={cn(
-            'absolute right-3 bottom-3 w-[min(310px,88%)] rounded-(--radius-4) bg-(--color-panel-solid) p-4 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.45),inset_0_0_0_1px_var(--gray-a5)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
-            automated ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
-          )}
-        >
-          <span className="flex items-center gap-2 text-xs font-medium text-strong">
-            <span className="grid size-5 place-items-center rounded-full bg-(--accent-a3) text-(--accent-11)">
-              <Zap size={11} strokeWidth={2} />
-            </span>
-            Comanda #2041 a fost livrată
-          </span>
-          <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0 text-xs text-subtle">
-            {[
-              'Factura FT-0412 a fost emisă',
-              'Clientul a primit emailul cu factura',
-              'Contabilitatea urmărește plata',
-            ].map((line) => (
-              <li key={line} className="flex items-center gap-2">
-                <Check size={12} strokeWidth={2} className="shrink-0 text-(--accent-11)" />
-                {line}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </MockFrame>
+          <Fade on={active === 0}>
+            <BoardPage />
+          </Fade>
+          <Fade on={active === 1}>
+            <ProductionPage />
+          </Fade>
+          <Fade on={active === 2}>
+            <OrderPage />
+          </Fade>
+        </AppBody>
+      </Shot>
     </ShowcaseLayout>
   )
 }

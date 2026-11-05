@@ -168,18 +168,15 @@ export default async function HomePage() {
         <ServicesCarousel />
       </Section>
 
-      {/* The whole path of one request, when the same team builds every part of it. */}
-      <Section id="cum-se-leaga" className="scroll-mt-(--header-height)">
+      {/* Apps: the usual workarounds named in passing, the right way shown beside them. */}
+      <Section id="aplicatii" className="scroll-mt-(--header-height)">
         <div className="mb-12 grid gap-6 lg:grid-cols-[3fr_2fr] lg:items-end lg:gap-16">
           <Heading as="h2" size={TYPE.display} className="max-w-4xl text-balance">
-            Site-ul, aplicația și facturarea,{' '}
-            <span className="whitespace-nowrap">
-              <Highlight>legate</Highlight> între ele
-            </span>
+            Un program care se <Highlight>potrivește</Highlight> firmei, nu invers
           </Heading>
           <Text as="p" size={TYPE.body} color="gray" className="max-w-[46ch] text-pretty">
-            Pentru că le construim pe toate, o cerere de pe site nu se pierde între emailuri. Ajunge
-            în aplicația firmei, devine proiect și se încheie cu factura trimisă în SPV.
+            Multe firme ajung să lucreze cum le lasă programul: câmpuri care nu li se aplică,
+            rapoarte refăcute în Excel, aceleași date scrise de două ori.
           </Text>
         </div>
         <HomeShowcase />

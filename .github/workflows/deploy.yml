@@ -1,0 +1,52 @@
+# On every push to main: upload the code to the server and run
+# scripts/deploy.sh there, which builds it and switches the live site over.
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   SSH_HOST  the server's address
+#   SSH_USER  the user the site runs as on the server
+#   SSH_KEY   the private SSH key GitHub logs in with
+#   SSH_PORT  only if SSH is not on port 22
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits for the one in progress.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_DIR: /var/www/websitepro
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload the code
+        run: |
+          RELEASE="$APP_DIR/releases/$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          echo "RELEASE=$RELEASE" >> "$GITHUB_ENV"
+          # Only the files git tracks: no node_modules, no local database or uploads.
+          git archive --format=tar.gz HEAD | ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "mkdir -p '$RELEASE' && tar -xzf - -C '$RELEASE'"
+
+      - name: Build and go live
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "bash -l '$RELEASE/scripts/deploy.sh'"

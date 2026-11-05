@@ -2,72 +2,282 @@
 
 import React from 'react'
 import {
-  Backpack,
-  Check,
-  Coffee,
-  CreditCard,
-  LayoutGrid,
-  type LucideIcon,
-  ReceiptText,
-  Shirt,
-  ShoppingCart,
-  User,
-  Watch,
-} from 'lucide-react'
+  ArchiveIcon,
+  CardStackIcon,
+  CheckIcon,
+  CubeIcon,
+  EnvelopeClosedIcon,
+  GearIcon,
+  ListBulletIcon,
+  LockClosedIcon,
+  PaperPlaneIcon,
+  PersonIcon,
+  PlusIcon,
+  ReaderIcon,
+} from '@radix-ui/react-icons'
 
 import { cn } from '@/utilities/ui'
 
-import { marked, MockFrame, ShowcaseLayout, type Step, useSteps } from './Showcase'
+import {
+  AppBar,
+  AppBody,
+  Fade,
+  floating,
+  GrainGradient,
+  IconTile,
+  type Icon,
+  RUN_ON,
+  ShowcaseLayout,
+  Shot,
+  SideNav,
+  type Step,
+  Timeline,
+  useSteps,
+} from './Showcase'
 
 /*
- * The online shop showcase: a generic shop, "Firma ta", in three moments
- * of one order. No made-up brand: the products are plain categories drawn
- * as outline icons, so the shop could be anyone's. The catalogue the owner manages, the cart
- * and payment the customer sees, and what happens on its own after the
- * payment. Sample data throughout.
+ * The online shop showcase: a generic shop, "Firma ta", in three moments of
+ * one order. The catalogue the owner manages, the checkout the customer sees,
+ * and what happens on its own after the payment. Products are plain things in
+ * a colour, their thumbnail the colour itself, so the shop could be anyone's.
+ * Sample data throughout.
  */
 
 const STEPS: Step[] = [
   {
-    icon: LayoutGrid,
+    icon: CubeIcon,
     title: 'Catalogul îl administrezi tu.',
     text: 'Produse, prețuri și stocuri, schimbate din panou, fără să ne scrii.',
   },
   {
-    icon: CreditCard,
+    icon: CardStackIcon,
     title: 'Plata se face pe site.',
     text: 'Card, ramburs sau transfer, cu confirmarea primită pe loc.',
   },
   {
-    icon: ReceiptText,
+    icon: ReaderIcon,
     title: 'Restul se face singur.',
     text: 'Factura pleacă în SPV, AWB-ul se generează, iar clientul primește emailul.',
   },
 ]
 
-const PRODUCTS: { icon: LucideIcon; name: string; price: string }[] = [
-  { icon: Shirt, name: 'Tricou', price: '89 lei' },
-  { icon: Coffee, name: 'Cană', price: '45 lei' },
-  { icon: Backpack, name: 'Rucsac', price: '189 lei' },
-  { icon: Watch, name: 'Ceas', price: '349 lei' },
+const NAV: { icon: Icon; label: string }[] = [
+  { icon: ListBulletIcon, label: 'Comenzi' },
+  { icon: CubeIcon, label: 'Produse' },
+  { icon: PersonIcon, label: 'Clienți' },
+  { icon: ReaderIcon, label: 'Facturi' },
+  { icon: GearIcon, label: 'Setări' },
 ]
 
-const CART: [string, string][] = [
-  ['2 × Tricou', '178,00'],
-  ['1 × Cană', '45,00'],
-  ['Livrare', '15,00'],
+/** A product's thumbnail: its colour, flat and soft. */
+function Swatch({ hue, className }: { hue: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        'size-8 shrink-0 rounded-(--radius-2) shadow-[inset_0_0_0_1px_var(--gray-a3)]',
+        className,
+      )}
+      style={{ background: `var(--${hue}-a5)` }}
+    />
+  )
+}
+
+/* ---------- 1. The catalogue ---------- */
+
+const PRODUCTS: { name: string; hue: string; stock: string; price: string }[] = [
+  { name: 'Tricou, verde', hue: 'grass', stock: '120', price: '79 lei' },
+  { name: 'Cană, albastră', hue: 'blue', stock: '64', price: '45 lei' },
+  { name: 'Rucsac, nisip', hue: 'amber', stock: '18', price: '189 lei' },
+  { name: 'Șapcă, neagră', hue: 'gray', stock: '35', price: '59 lei' },
 ]
 
-const AFTER: [string, string][] = [
-  ['Plată acceptată', 'card, 238,00 lei'],
-  ['Factură emisă', 'seria FT, nr. 0318'],
-  ['Trimisă în SPV', 'ca e-Factura'],
-  ['AWB generat', 'ridicare mâine dimineață'],
-  ['Email către client', 'factura și numărul AWB'],
+function CataloguePage() {
+  return (
+    <div className="relative p-5 sm:p-7">
+      <div className="flex items-center">
+        <span className="text-[15px] font-medium text-strong">Produse</span>
+        <span className="ml-auto flex items-center gap-1.5 rounded-(--radius-2) bg-(--gray-12) px-2.5 py-1 text-xs font-medium text-(--gray-1)">
+          <PlusIcon className="size-3" />
+          Produs
+        </span>
+      </div>
+      <div className="mt-5 grid grid-cols-[1fr_auto_auto] text-[11px] text-subtle">
+        <span className="pb-2">Produs</span>
+        <span className="pb-2 pl-6">Stoc</span>
+        <span className="pb-2 pl-6 text-right">Preț</span>
+        {PRODUCTS.map(({ name, hue, stock, price }, i) => (
+          <React.Fragment key={name}>
+            <span
+              className={cn(
+                'flex items-center gap-3 border-t border-frame py-2.5 text-[13px] text-strong',
+                RUN_ON[i],
+              )}
+            >
+              <Swatch hue={hue} />
+              {name}
+            </span>
+            <span
+              className={cn(
+                'flex items-center border-t border-frame py-2.5 pl-6 text-xs tabular-nums',
+                RUN_ON[i],
+              )}
+            >
+              {stock}
+            </span>
+            <span
+              className={cn(
+                'flex items-center justify-end border-t border-frame py-2.5 pl-6 text-xs text-strong tabular-nums',
+                RUN_ON[i],
+              )}
+            >
+              {price}
+            </span>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** The first product, open for editing: the one thing on this screen that pops. */
+function PriceEditor() {
+  return (
+    <div className={cn('absolute top-[13.5rem] right-3 w-60 p-4 sm:-right-6', floating)}>
+      <span className="flex items-center gap-3">
+        <Swatch hue="grass" className="size-9" />
+        <span className="text-[13px] font-medium text-strong">Tricou, verde</span>
+      </span>
+      <span className="mt-4 block text-[11px] text-subtle">Preț</span>
+      <span className="mt-1 flex items-center rounded-(--radius-2) px-2.5 py-1.5 text-[13px] text-strong shadow-[inset_0_0_0_1px_var(--accent-8),0_0_0_3px_var(--accent-a4)]">
+        <span className="tabular-nums">79</span>
+        <span className="ml-px h-3.5 w-px bg-(--gray-12)" />
+        <span className="ml-auto text-xs text-subtle">lei</span>
+      </span>
+      <span className="mt-3 block rounded-(--radius-2) bg-(--accent-9) py-1.5 text-center text-xs font-medium text-(--accent-contrast)">
+        Salvează
+      </span>
+    </div>
+  )
+}
+
+/* ---------- 2. The checkout, on the shop's own site ---------- */
+
+const CART: { what: string; hue: string; sum: string }[] = [
+  { what: '2 × Tricou, verde', hue: 'grass', sum: '158,00' },
+  { what: '1 × Cană, albastră', hue: 'blue', sum: '45,00' },
 ]
+
+function Checkout() {
+  return (
+    <>
+      <div className="flex h-11 items-center gap-4 border-b border-frame px-4 text-[13px]">
+        <span className="font-semibold tracking-tight text-strong">Firma ta</span>
+        <span className="mx-auto hidden gap-5 text-xs text-subtle sm:flex">
+          <span>Produse</span>
+          <span>Noutăți</span>
+          <span>Contact</span>
+        </span>
+        <span className="ml-auto flex items-center gap-1.5 text-xs text-subtle sm:ml-0">
+          <LockClosedIcon className="size-3" />
+          Plată securizată
+        </span>
+      </div>
+
+      <div className="grid gap-8 p-5 sm:grid-cols-[1fr_15rem] sm:p-7">
+        <div>
+          <span className="text-[15px] font-medium text-strong">Coșul tău</span>
+          <ul className="m-0 mt-5 list-none p-0">
+            {CART.map(({ what, hue, sum }) => (
+              <li
+                key={what}
+                className="flex items-center gap-3 border-t border-frame py-2.5 text-[13px]"
+              >
+                <Swatch hue={hue} />
+                <span className="text-strong">{what}</span>
+                <span className="ml-auto text-xs text-subtle tabular-nums">{sum}</span>
+              </li>
+            ))}
+            <li className="flex items-center border-t border-frame py-2.5 text-xs text-subtle">
+              Livrare
+              <span className="ml-auto tabular-nums">15,00</span>
+            </li>
+            <li className="flex items-center border-t border-frame pt-3 text-[13px] font-medium text-strong">
+              Total
+              <span className="ml-auto tabular-nums">218,00 lei</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* The card being paid with: the one thing on this screen that pops. */}
+        <div className="hidden sm:block">
+          <GrainGradient className="flex aspect-[1.6] w-full flex-col justify-between rounded-(--radius-4) p-4 text-strong shadow-[0_18px_36px_-16px_var(--gray-a9),inset_0_0_0_1px_var(--gray-a4)]">
+            <span className="h-5 w-7 rounded-[4px] bg-white/40 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.45)]" />
+            <span className="flex items-end justify-between text-xs">
+              <span className="font-mono tracking-wider">•••• 4242</span>
+              <span>10/28</span>
+            </span>
+          </GrainGradient>
+          <span className="mt-4 block rounded-(--radius-2) bg-(--accent-9) py-2 text-center text-xs font-medium text-(--accent-contrast)">
+            Plătește 218,00 lei
+          </span>
+          <span className="mt-2 block text-center text-[11px] text-subtle">
+            sau ramburs la curier
+          </span>
+        </div>
+      </div>
+    </>
+  )
+}
+
+/* ---------- 3. After the payment ---------- */
+
+const AFTER = [
+  { icon: CheckIcon, text: 'Plată acceptată', detail: 'card, 218,00 lei', when: '10:42' },
+  { icon: ReaderIcon, text: 'Factură emisă', detail: 'seria FT, nr. 0318', when: '10:42' },
+  { icon: PaperPlaneIcon, text: 'Trimisă în SPV', detail: 'ca e-Factura', when: '10:43' },
+  { icon: ArchiveIcon, text: 'AWB generat', detail: 'ridicare mâine dimineață', when: '10:43' },
+  { icon: EnvelopeClosedIcon, text: 'Email către client', when: '10:43' },
+]
+
+function OrderPage() {
+  return (
+    <div className="p-5 sm:p-7">
+      <span className="block text-[15px] font-medium text-strong">Comanda #1048</span>
+      <span className="mt-0.5 flex items-center gap-2 text-xs text-subtle">
+        3 produse
+        <span className="size-1.5 rounded-full bg-(--grass-9)" />
+        Plătită
+      </span>
+      <div className="mt-7">
+        <Timeline items={AFTER} />
+      </div>
+    </div>
+  )
+}
+
+/** The email the customer gets, without anyone writing it. */
+function CustomerEmail() {
+  return (
+    <div className={cn('absolute top-[15.5rem] right-3 w-64 p-4 sm:-right-6', floating)}>
+      <span className="flex items-center gap-3">
+        <IconTile className="size-8">
+          <EnvelopeClosedIcon />
+        </IconTile>
+        <span className="leading-tight">
+          <span className="block text-[13px] font-medium text-strong">Comanda ta a plecat</span>
+          <span className="block text-[11px] text-subtle">de la Firma ta, acum</span>
+        </span>
+      </span>
+      <span className="mt-3 block text-xs leading-relaxed text-subtle">
+        Factura e atașată, iar coletul ajunge mâine.
+      </span>
+    </div>
+  )
+}
 
 export function ShopShowcase() {
   const { ref, active, select } = useSteps(STEPS.length)
+  const page = active === 0 ? 'Produse' : 'Comenzi'
 
   return (
     <ShowcaseLayout
@@ -77,141 +287,36 @@ export function ShopShowcase() {
       active={active}
       onSelect={select}
     >
-      <MockFrame>
-        {/* The shop's header. */}
-        <div className="flex items-center gap-4 rounded-(--radius-3) bg-(--gray-a2) px-4 py-2.5 shadow-[inset_0_0_0_1px_var(--gray-a3)]">
-          <span className="text-sm font-semibold tracking-tight text-strong">Firma ta</span>
-          <span className="mx-auto hidden gap-5 text-xs text-subtle md:flex">
-            <span>Toate</span>
-            <span>Noutăți</span>
-            <span>Reduceri</span>
-            <span>Contact</span>
-          </span>
-          <span className={cn('ml-auto flex items-center gap-3 p-1 md:ml-0', marked(active === 1))}>
-            <span className="relative text-strong">
-              <ShoppingCart size={16} strokeWidth={1.5} />
-              <span
-                className={cn(
-                  'absolute -top-1.5 -right-2 grid size-3.5 place-items-center rounded-full bg-(--accent-9) text-[9px] font-medium text-(--accent-contrast) transition-transform',
-                  active >= 1 ? 'scale-100' : 'scale-0',
-                )}
-              >
-                3
-              </span>
-            </span>
-            <span className="grid size-6 place-items-center rounded-full bg-(--gray-a4) text-strong">
-              <User size={12} strokeWidth={1.75} />
-            </span>
-          </span>
-        </div>
+      <Shot
+        overlays={
+          <>
+            <Fade on={active === 0} className="pointer-events-none">
+              <PriceEditor />
+            </Fade>
+            <Fade on={active === 2} className="pointer-events-none">
+              <CustomerEmail />
+            </Fade>
+          </>
+        }
+      >
+        {/* The shop's panel, for the owner. */}
+        <Fade on={active !== 1}>
+          <AppBar page={page} />
+          <AppBody nav={<SideNav items={NAV} page={page} />}>
+            <Fade on={active === 0}>
+              <CataloguePage />
+            </Fade>
+            <Fade on={active === 2}>
+              <OrderPage />
+            </Fade>
+          </AppBody>
+        </Fade>
 
-        <div className="mt-2.5 rounded-(--radius-3) bg-(--accent-a2) px-4 py-3 text-center text-sm">
-          <span className="font-medium text-strong">Bine ai revenit!</span>{' '}
-          <span className="text-subtle">Livrarea e gratuită peste 300 lei.</span>
-        </div>
-
-        <div className="flex items-center justify-between gap-4 px-1 py-3">
-          <span className="truncate text-xs text-subtle">Produse noi în fiecare săptămână.</span>
-          <span className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-strong shadow-[inset_0_0_0_1px_var(--gray-a6)]">
-            Vezi tot
-          </span>
-        </div>
-
-        <div className={cn('grid grid-cols-2 gap-2.5 md:grid-cols-4', marked(active === 0))}>
-          {PRODUCTS.map((p) => (
-            <div
-              key={p.name}
-              className="overflow-hidden rounded-(--radius-3) shadow-[inset_0_0_0_1px_var(--gray-a4)]"
-            >
-              <div className="grid aspect-[4/3.4] place-items-center bg-(--gray-a2) text-(--gray-11)">
-                <p.icon size={56} strokeWidth={0.9} />
-              </div>
-              <div className="flex items-baseline justify-between gap-2 px-3 py-2.5 text-xs">
-                <span className="truncate text-strong">{p.name}</span>
-                <span className="shrink-0 font-mono text-subtle">{p.price}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Dims the shop while the cart or the order is in front. */}
-        <div
-          className={cn(
-            'pointer-events-none absolute inset-0 bg-(--gray-12)/10 backdrop-blur-[1px] transition-opacity duration-500 dark:bg-black/40',
-            active >= 1 ? 'opacity-100' : 'opacity-0',
-          )}
-        />
-
-        {/* Step 2: the cart, sliding in from the right. */}
-        <div
-          className={cn(
-            'absolute inset-y-2.5 right-2.5 flex w-[min(300px,86%)] flex-col rounded-(--radius-4) bg-(--color-panel-solid) shadow-[0_20px_50px_-20px_rgb(0_0_0/0.45),inset_0_0_0_1px_var(--gray-a5)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:inset-y-3 sm:right-3',
-            active === 1 ? 'translate-x-0' : 'translate-x-[115%]',
-          )}
-        >
-          <div className="border-b border-frame px-4 py-3 text-sm font-medium text-strong">
-            Coșul tău
-          </div>
-          <ul className="m-0 flex list-none flex-col gap-2 px-4 py-3 text-xs">
-            {CART.map(([what, sum]) => (
-              <li key={what} className="flex justify-between gap-3">
-                <span className="text-subtle">{what}</span>
-                <span className="text-strong tabular-nums">{sum}</span>
-              </li>
-            ))}
-            <li className="mt-1 flex justify-between gap-3 border-t border-frame pt-2 text-sm font-medium text-strong">
-              <span>Total</span>
-              <span className="tabular-nums">238,00 lei</span>
-            </li>
-          </ul>
-          <div className="mt-auto flex flex-col gap-2 px-4 pb-4">
-            <span className="flex items-center gap-2 rounded-(--radius-2) px-3 py-2 text-xs text-strong shadow-[inset_0_0_0_1.5px_var(--accent-8)]">
-              <CreditCard size={14} strokeWidth={1.5} />
-              Card
-              <span className="ml-auto font-mono text-subtle">•••• 4242</span>
-            </span>
-            <span className="rounded-(--radius-2) px-3 py-2 text-xs text-subtle shadow-[inset_0_0_0_1px_var(--gray-a5)]">
-              Ramburs la curier
-            </span>
-            <span className="mt-1 rounded-(--radius-2) bg-(--accent-9) py-2 text-center text-xs font-medium text-(--accent-contrast)">
-              Plătește 238,00 lei
-            </span>
-          </div>
-        </div>
-
-        {/* Step 3: what happens after the payment, with nobody typing anything. */}
-        <div
-          className={cn(
-            'absolute right-2.5 bottom-2.5 w-[min(320px,90%)] rounded-(--radius-4) bg-(--color-panel-solid) shadow-[0_20px_50px_-20px_rgb(0_0_0/0.45),inset_0_0_0_1px_var(--gray-a5)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:right-3 sm:bottom-3',
-            active === 2 ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
-          )}
-        >
-          <div className="flex items-center justify-between border-b border-frame px-4 py-3 text-sm">
-            <span className="font-medium text-strong">Comanda #1048</span>
-            <span className="text-xs text-subtle">10:42</span>
-          </div>
-          <ol className="m-0 flex list-none flex-col gap-2.5 px-4 py-3">
-            {AFTER.map(([what, detail], i) => (
-              <li
-                key={what}
-                className={cn(
-                  'flex items-start gap-2.5 text-xs transition-opacity duration-300',
-                  active === 2 ? 'opacity-100' : 'opacity-0',
-                )}
-                style={{ transitionDelay: active === 2 ? `${250 + i * 180}ms` : '0ms' }}
-              >
-                <span className="mt-px grid size-4 shrink-0 place-items-center rounded-full bg-(--accent-a3) text-(--accent-11)">
-                  <Check size={10} strokeWidth={2.5} />
-                </span>
-                <span className="leading-tight">
-                  <span className="block text-strong">{what}</span>
-                  <span className="block text-subtle">{detail}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </MockFrame>
+        {/* The shop's site, for the customer. */}
+        <Fade on={active === 1}>
+          <Checkout />
+        </Fade>
+      </Shot>
     </ShowcaseLayout>
   )
 }

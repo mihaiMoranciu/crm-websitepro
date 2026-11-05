@@ -1,17 +1,10 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Link from 'next/link'
 import { Heading, IconButton, Text } from '@radix-ui/themes'
 import { ArrowUpRight, Check, ChevronLeft, ChevronRight, MousePointer2, Shirt } from 'lucide-react'
-import {
-  AnimatePresence,
-  motion,
-  useInView,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-} from 'motion/react'
+import { useMotionValueEvent, useReducedMotion, useScroll } from 'motion/react'
 
 import { TYPE } from '@/design/type'
 import { cn } from '@/utilities/ui'
@@ -20,19 +13,15 @@ import { NOISE } from './HeroGlow'
 
 /*
  * The services, one card each: the name, a line, and at the foot, on the
- * hero's grainy stage, a small piece of the real thing, quietly at work. An order comes in, a state moves
- * on, the uptime bars move with the clock. One shared tick drives them all,
- * only while the row is on screen, and never under reduced motion, where each
- * card simply shows its first frame.
+ * hero's grainy stage, a still picture of the real thing. The pictures do not
+ * move and all have the same height, so the row reads as one even set.
  *
  * Generic on purpose: "Firma ta" and plain products, no invented brands.
  */
 
-const TICK_MS = 2400
-
 /** The panel at the foot of a card, cropped by the card's bottom edge. */
 const panel =
-  'w-full translate-y-3 rounded-t-(--radius-3) bg-(--color-panel-solid) text-xs shadow-[0_-10px_30px_-18px_var(--gray-a9),inset_0_0_0_1px_var(--gray-a5)]'
+  'h-[164px] w-full translate-y-3 overflow-hidden rounded-t-(--radius-3) bg-(--color-panel-solid) text-xs shadow-[0_-10px_30px_-18px_var(--gray-a9),inset_0_0_0_1px_var(--gray-a5)]'
 
 /* Full strength at the card's foot, gone by halfway up the stage. */
 const FADE_UP = 'linear-gradient(to top, #000 40%, rgb(0 0 0 / 0.5) 75%, transparent 100%)'
@@ -85,9 +74,8 @@ function Stage({
   )
 }
 
-/** A site: the visitor's pointer goes to the button, the request is sent. */
-function SitePreview({ tick }: { tick: number }) {
-  const sent = tick % 2 === 1
+/** A site: the visitor's pointer on the button. */
+function SitePreview() {
   return (
     <div className={cn(panel, 'relative')}>
       <div className="flex justify-center border-b border-frame py-1.5">
@@ -100,37 +88,23 @@ function SitePreview({ tick }: { tick: number }) {
           Spune clar ce faci.
         </p>
         <p className="m-0 mt-1 text-subtle">Un site rapid, găsit pe Google.</p>
-        <span
-          className={cn(
-            'mt-3 inline-block rounded-(--radius-2) px-3 py-1.5 font-medium text-(--accent-contrast) transition-all duration-300',
-            sent ? 'scale-95 bg-(--accent-10)' : 'bg-(--accent-9)',
-          )}
-        >
+        <span className="mt-3 inline-block rounded-(--radius-2) bg-(--accent-9) px-3 py-1.5 font-medium text-(--accent-contrast)">
           Cere o ofertă
         </span>
       </div>
       <MousePointer2
         size={16}
         strokeWidth={1.75}
-        className="absolute fill-(--gray-12) text-(--gray-1) transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]"
-        style={sent ? { left: 92, top: 100 } : { left: '78%', top: 52 }}
+        className="absolute fill-(--gray-12) text-(--gray-1)"
+        style={{ left: 92, top: 100 }}
       />
-      <span
-        className={cn(
-          'absolute top-12 right-3 flex items-center gap-1.5 rounded-full bg-(--color-panel-solid) px-2.5 py-1 text-[11px] text-strong shadow-[0_6px_16px_-8px_var(--gray-a9),inset_0_0_0_1px_var(--gray-a5)] transition-all duration-300',
-          sent ? 'translate-y-0 opacity-100 delay-500' : '-translate-y-1 opacity-0',
-        )}
-      >
-        <Check size={11} strokeWidth={2.5} className="text-(--accent-11)" />
-        Cerere trimisă
-      </span>
     </div>
   )
 }
 
 /** A shop: paid orders keep arriving, the newest on top. */
-function ShopPreview({ tick }: { tick: number }) {
-  const orders = [0, 1, 2].map((i) => 1048 + tick - i)
+function ShopPreview() {
+  const orders = [1048, 1047, 1046]
   return (
     <div className={panel}>
       <div className="flex items-center gap-3 border-b border-frame px-4 py-3">
@@ -146,28 +120,18 @@ function ShopPreview({ tick }: { tick: number }) {
         </span>
       </div>
       <ul className="m-0 list-none px-4 pt-2 pb-6">
-        <AnimatePresence initial={false}>
-          {orders.map((id, i) => (
-            <motion.li
-              key={id}
-              layout
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="flex items-center gap-2 py-1.5"
-            >
-              <span
-                className={cn(
-                  'size-1.5 rounded-full',
-                  i === 0 ? 'bg-(--accent-9)' : 'bg-(--gray-a6)',
-                )}
-              />
-              <span className="text-strong tabular-nums">Comanda #{id}</span>
-              <span className="ml-auto text-subtle">plătită, factură în SPV</span>
-            </motion.li>
-          ))}
-        </AnimatePresence>
+        {orders.map((id, i) => (
+          <li key={id} className="flex items-center gap-2 py-1.5">
+            <span
+              className={cn(
+                'size-1.5 rounded-full',
+                i === 0 ? 'bg-(--accent-9)' : 'bg-(--gray-a6)',
+              )}
+            />
+            <span className="text-strong tabular-nums">Comanda #{id}</span>
+            <span className="ml-auto text-subtle">plătită, factură în SPV</span>
+          </li>
+        ))}
       </ul>
     </div>
   )
@@ -179,8 +143,8 @@ const STATES = [
   { label: 'Gata', tone: 'bg-(--grass-a3) text-(--grass-11)' },
 ]
 
-/** An app: the same orders, each moving on to its next state. */
-function AppPreview({ tick }: { tick: number }) {
+/** An app: orders, each in a different state. */
+function AppPreview() {
   const rows = [
     { id: '#2041', who: 'DC' },
     { id: '#2040', who: 'AM' },
@@ -195,7 +159,7 @@ function AppPreview({ tick }: { tick: number }) {
       </div>
       <ul className="m-0 list-none px-2 pt-1 pb-6">
         {rows.map((row, i) => {
-          const state = STATES[(tick + i) % STATES.length]
+          const state = STATES[i % STATES.length]
           return (
             <li key={row.id} className="flex items-center gap-2 px-2 py-2">
               <span className="text-strong tabular-nums">Comanda {row.id}</span>
@@ -204,7 +168,7 @@ function AppPreview({ tick }: { tick: number }) {
               </span>
               <span
                 className={cn(
-                  'w-[72px] rounded-(--radius-1) py-0.5 text-center text-[11px] font-medium transition-colors duration-500',
+                  'w-[72px] rounded-(--radius-1) py-0.5 text-center text-[11px] font-medium',
                   state.tone,
                 )}
               >
@@ -224,18 +188,18 @@ const PALETTES = [
   { ink: '#1f3d33', accent: '#d9c9a3', paper: '#f2f0ea' },
 ]
 
-/** An identity: the same mark tried in one palette after another. */
-function IdentityPreview({ tick }: { tick: number }) {
-  const current = tick % PALETTES.length
+/** An identity: the mark in its chosen palette, the other options beside it. */
+function IdentityPreview() {
+  const current = 0
   const p = PALETTES[current]
   return (
-    <div className={cn(panel, 'flex items-center gap-4 px-4 pt-4 pb-7')}>
+    <div className={cn(panel, 'flex items-center gap-4 px-4 pb-3')}>
       <span
-        className="grid size-20 shrink-0 place-items-center rounded-(--radius-3) transition-colors duration-700"
+        className="grid size-20 shrink-0 place-items-center rounded-(--radius-3)"
         style={{ background: p.ink }}
       >
         <span
-          className="grid size-11 place-items-center rounded-[5px] font-serif text-lg font-semibold italic transition-colors duration-700"
+          className="grid size-11 place-items-center rounded-[5px] font-serif text-lg font-semibold italic"
           style={{ color: p.accent, boxShadow: `inset 0 0 0 1.5px ${p.accent}` }}
         >
           FT
@@ -248,7 +212,7 @@ function IdentityPreview({ tick }: { tick: number }) {
             <span
               key={pal.ink}
               className={cn(
-                'size-5 rounded-full transition-shadow duration-300',
+                'size-5 rounded-full',
                 i === current
                   ? 'shadow-[0_0_0_2px_var(--color-panel-solid),0_0_0_3.5px_var(--gray-12)]'
                   : 'shadow-[inset_0_0_0_1px_var(--gray-a5)]',
@@ -263,16 +227,13 @@ function IdentityPreview({ tick }: { tick: number }) {
   )
 }
 
-/** Upkeep: the site online, the last thirty days of uptime moving with the clock. */
-function MaintenancePreview({ tick }: { tick: number }) {
-  const bars = Array.from({ length: 30 }, (_, i) => (i + tick) % 30 === 24)
+/** Upkeep: the site online, the last thirty days of uptime. */
+function MaintenancePreview() {
+  const bars = Array.from({ length: 30 }, (_, i) => i === 24)
   return (
     <div className={panel}>
       <div className="flex items-center gap-2 border-b border-frame px-4 py-2.5">
-        <span className="relative flex size-2">
-          <span className="absolute inset-0 rounded-full bg-(--grass-9) opacity-60 motion-safe:animate-ping" />
-          <span className="relative size-2 rounded-full bg-(--grass-9)" />
-        </span>
+        <span className="size-2 rounded-full bg-(--grass-9)" />
         <span className="font-medium text-strong">firma-ta.ro</span>
         <span className="ml-auto text-subtle">online</span>
       </div>
@@ -281,10 +242,7 @@ function MaintenancePreview({ tick }: { tick: number }) {
           {bars.map((incident, i) => (
             <span
               key={i}
-              className={cn(
-                'flex-1 rounded-[2px] transition-colors duration-500',
-                incident ? 'bg-(--amber-9)' : 'bg-(--grass-9)',
-              )}
+              className={cn('flex-1 rounded-[2px]', incident ? 'bg-(--amber-9)' : 'bg-(--grass-9)')}
             />
           ))}
         </div>
@@ -311,7 +269,7 @@ type Service = {
   href: string
   /** Two neighbouring hues from the hero band, one per corner of the stage. */
   hues: [string, string]
-  Preview: (props: { tick: number }) => React.ReactNode
+  Preview: () => React.ReactNode
 }
 
 const SERVICES: Service[] = [
@@ -365,17 +323,9 @@ export function ServicesCarousel() {
   const track = useRef<HTMLDivElement>(null)
   const dots = useRef<HTMLDivElement>(null)
   const reduceMotion = useReducedMotion()
-  const inView = useInView(track, { amount: 0.3 })
   const { scrollXProgress } = useScroll({ container: track })
   // Only flips at the two ends, so this re-renders twice per trip, not per frame.
   const [edge, setEdge] = useState<'start' | 'middle' | 'end'>('start')
-  const [tick, setTick] = useState(0)
-
-  useEffect(() => {
-    if (!inView || reduceMotion) return
-    const id = window.setInterval(() => setTick((t) => t + 1), TICK_MS)
-    return () => window.clearInterval(id)
-  }, [inView, reduceMotion])
 
   // Light up the dot for the card nearest the scroll position, by hand, so
   // scrolling never re-renders the cards.
@@ -409,16 +359,12 @@ export function ServicesCarousel() {
     <div>
       <div
         ref={track}
-        className="-mr-(--gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pr-(--gutter) pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mr-(--gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth pr-(--gutter) pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {SERVICES.map(({ title, text, href, hues, Preview }, i) => (
-          <motion.article
+        {SERVICES.map(({ title, text, href, hues, Preview }) => (
+          <article
             key={title}
             data-card
-            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
             className="h-[420px] w-[300px] shrink-0 snap-start overflow-hidden rounded-(--radius-4) bg-(--color-panel-solid) shadow-[inset_0_0_0_1px_var(--gray-a5)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--gray-a7)] sm:w-[340px]"
           >
             <Link href={href} className="group flex h-full flex-col text-inherit no-underline">
@@ -439,10 +385,10 @@ export function ServicesCarousel() {
                 </Text>
               </div>
               <Stage hues={hues}>
-                <Preview tick={tick} />
+                <Preview />
               </Stage>
             </Link>
-          </motion.article>
+          </article>
         ))}
       </div>
 
